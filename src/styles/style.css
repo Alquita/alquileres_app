@@ -15,14 +15,17 @@
     justify-content: center;
     align-items: center;
   
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
   
   .home-title {
-    margin-bottom: 3rem;
-    font-size: 2.5rem;
-    font-weight: bold;
+    margin-bottom: 4rem;
+    font-size: 3.5rem;
+    font-weight: 700;
     text-align: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
   }
   
   .home-buttons {
@@ -30,51 +33,195 @@
     gap: 2rem;
   }
 
+  .home-buttons .btn {
+    padding: 1rem 3rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .home-buttons .btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  }
+
+  .home-buttons .btn-success {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+  }
+
+  .home-buttons .btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  }
+
+  .home-buttons .btn:active {
+    transform: translateY(-2px);
+  }
+
   /* INFO */
 .info-container {
+    height: 100vh;
+    width: 100vw;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f8f9fa;
-    padding-top: 4rem;
     justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
   }
   
   .info-title {
-    font-size: 2.6rem;
+    font-size: 2.8rem;
     font-weight: 700;
-    margin-bottom: 2.5rem;
-    
+    margin-bottom: 3rem;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   }
   
   .info-table {
-    width: 70%;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto 2rem;
     background-color: #ffffff;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   }
   
   .info-table th {
-    background-color: #212529;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    font-size: 1.1rem;
-    padding: 1rem;
+    font-size: 1.2rem;
+    padding: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
   }
   
   .info-table td {
-    padding: 1.1rem;
-    font-size: 1.05rem;
+    padding: 1.3rem;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.3s ease;
+  }
+
+  .info-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .info-table tbody tr:hover td {
+    background-color: #f8f9fa;
   }
   
   .info-link {
     text-decoration: none;
-    font-weight: 500;
-    color: #0d6efd;
+    font-weight: 600;
+    color: #667eea;
+    transition: all 0.3s ease;
+    display: inline-block;
   }
   
   .info-link:hover {
-    text-decoration: underline;
+    color: #764ba2;
+    transform: translateX(5px);
+    text-decoration: none;
+  }
+
+  .info-container .btn {
+    padding: 0.8rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    background-color: #ffffff;
+    color: #667eea;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .info-container .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    background-color: #f8f9fa;
+  }
+
+  /* DEPTO DETAIL */
+.depto-container {
+    height: 100vh;
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
   }
   
+  .depto-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .depto-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 90%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+  }
+  
+  .depto-info-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+  }
+  
+  .depto-info-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .depto-info-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .depto-info-value {
+    font-size: 1.3rem;
+    color: #212529;
+    font-weight: 500;
+  }
+  
+  .depto-container .btn {
+    padding: 0.8rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    background-color: #ffffff;
+    color: #667eea;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .depto-container .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    background-color: #f8f9fa;
+  }
