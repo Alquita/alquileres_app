@@ -14,7 +14,14 @@ function Home() {
           className="btn btn-primary btn-lg px-5 py-3"
           onClick={() => navigate('/info')}
         >
-          Info
+          Informacion Propiedades
+        </button>
+
+        <button
+          className="btn btn-info btn-lg px-5 py-3"
+          onClick={() => navigate('/seleccion-departamentos')}
+        >
+          Departamentos
         </button>
 
         <button

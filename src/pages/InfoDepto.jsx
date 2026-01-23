@@ -11,6 +11,18 @@ function InfoDepto() {
   const [copiedMunicipal, setCopiedMunicipal] = useState(null)
   const [copiedPatente, setCopiedPatente] = useState(null)
 
+  // Detectar de qué página viene para saber a dónde volver
+  const vieneDeInfo = location.pathname.includes('/info/')
+  const vieneDeDepto = location.pathname.includes('/depto/')
+
+  const handleVolver = () => {
+    if (vieneDeDepto) {
+      navigate(`/departamentos/${persona}`)
+    } else {
+      navigate('/info')
+    }
+  }
+
   const copyToClipboard = (text, id) => {
     navigator.clipboard.writeText(text)
     setCopiedRenta(id)
@@ -62,13 +74,12 @@ function InfoDepto() {
   )
 
   const MunicipalCard = ({ municipal, label, municipalNum }) => {
-    // Detectar si es el formato especial de farmacia (empieza con 'S-')
     const isFarmacia = municipal.length === 1 && municipal[0].startsWith('S-')
     
     if (isFarmacia) {
       const fullCode = municipal[0]
-      const letra = fullCode.split('-')[0] // 'S'
-      const numero = fullCode.split('-')[1] // '2890'
+      const letra = fullCode.split('-')[0]
+      const numero = fullCode.split('-')[1]
       
       return (
         <div className="depto-info-card municipal-card">
@@ -140,7 +151,6 @@ function InfoDepto() {
       )
     }
     
-    // Renderizado normal para otros casos
     return (
       <div className="depto-info-card municipal-card">
         <h3 className="depto-info-label">{label}</h3>
@@ -228,6 +238,209 @@ function InfoDepto() {
     </div>
   )
 
+  const EcogasCard = ({ ecogas, label }) => {
+    const [copiedEcogas, setCopiedEcogas] = useState(null)
+
+    const copyEcogas = (numero) => {
+      navigator.clipboard.writeText(numero)
+      setCopiedEcogas('ecogas')
+      setTimeout(() => setCopiedEcogas(null), 2000)
+    }
+
+    return (
+      <div className="depto-info-card">
+        <h3 className="depto-info-label">{label}</h3>
+        <div className="renta-container">
+          <a 
+            href="https://autogestion.ecogas.com.ar/uiextranet/ingreso?s=p"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="renta-link"
+          >
+            {ecogas}
+          </a>
+          <button 
+            className="copy-btn"
+            onClick={() => copyEcogas(ecogas)}
+            title="Copiar número"
+          >
+            {copiedEcogas === 'ecogas' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const EpecCard = ({ epec, label }) => {
+    const [copiedEpec, setCopiedEpec] = useState(null)
+
+    const copyEpecDigit = (digit, id) => {
+      navigator.clipboard.writeText(digit)
+      setCopiedEpec(id)
+      setTimeout(() => setCopiedEpec(null), 2000)
+    }
+
+    const partes = epec.split('-').map(p => p.trim())
+
+    return (
+      <div className="depto-info-card">
+        <h3 className="depto-info-label">{label}</h3>
+        <div className="municipal-digits farmacia-digits">
+          <div className="digit-container">
+            <a 
+              href="https://www.epec.com.ar/tramites/pagos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="digit-value"
+              style={{ cursor: 'pointer', textDecoration: 'none' }}
+            >
+              {partes[0]}
+            </a>
+            <button 
+              className="copy-digit-btn"
+              onClick={() => copyEpecDigit(partes[0], 'epec-1')}
+              title={`Copiar ${partes[0]}`}
+            >
+              {copiedEpec === 'epec-1' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              )}
+            </button>
+          </div>
+          
+          <span className="digit-separator">-</span>
+          
+          <div className="digit-container">
+            <a 
+              href="https://www.epec.com.ar/tramites/pagos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="digit-value"
+              style={{ cursor: 'pointer', textDecoration: 'none' }}
+            >
+              {partes[1]}
+            </a>
+            <button 
+              className="copy-digit-btn"
+              onClick={() => copyEpecDigit(partes[1], 'epec-2')}
+              title={`Copiar ${partes[1]}`}
+            >
+              {copiedEpec === 'epec-2' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const CooperativaLuzCard = ({ numero, label }) => {
+    const [copiedCoop, setCopiedCoop] = useState(null)
+
+    const copyCoop = (num) => {
+      navigator.clipboard.writeText(num)
+      setCopiedCoop('coop')
+      setTimeout(() => setCopiedCoop(null), 2000)
+    }
+
+    return (
+      <div className="depto-info-card">
+        <h3 className="depto-info-label">{label}</h3>
+        <div className="renta-container">
+          <a 
+            href="https://facturas.cooplosreartes.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="renta-link"
+          >
+            {numero}
+          </a>
+          <button 
+            className="copy-btn"
+            onClick={() => copyCoop(numero)}
+            title="Copiar número"
+          >
+            {copiedCoop === 'coop' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const ComunaAguaCard = ({ numero, label }) => {
+    const [copiedComuna, setCopiedComuna] = useState(null)
+
+    const copyComuna = (num) => {
+      navigator.clipboard.writeText(num)
+      setCopiedComuna('comuna')
+      setTimeout(() => setCopiedComuna(null), 2000)
+    }
+
+    return (
+      <div className="depto-info-card">
+        <h3 className="depto-info-label">{label}</h3>
+        <div className="renta-container">
+          <a 
+            href="https://www.municipalidad.com/lrea/deuda"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="renta-link"
+          >
+            {numero}
+          </a>
+          <button 
+            className="copy-btn"
+            onClick={() => copyComuna(numero)}
+            title="Copiar número"
+          >
+            {copiedComuna === 'comuna' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="depto-container">
       <h2 className="depto-title">
@@ -264,6 +477,34 @@ function InfoDepto() {
             <PatentesCard 
               patentes={depto.patentes}
               label="Patentes"
+            />
+          )}
+
+          {depto?.ecogas && (
+            <EcogasCard 
+              ecogas={depto.ecogas}
+              label="Ecogas"
+            />
+          )}
+
+          {depto?.epec && (
+            <EpecCard 
+              epec={depto.epec}
+              label="EPEC"
+            />
+          )}
+
+          {depto?.cooperativaLuz && (
+            <CooperativaLuzCard 
+              numero={depto.cooperativaLuz}
+              label="Cooperativa de Luz"
+            />
+          )}
+
+          {depto?.comunaAgua && (
+            <ComunaAguaCard 
+              numero={depto.comunaAgua}
+              label="Comuna Agua y Tasa"
             />
           )}
         </div>
@@ -321,7 +562,7 @@ function InfoDepto() {
 
       <button
         className="btn btn-secondary mt-4"
-        onClick={() => navigate('/info')}
+        onClick={handleVolver}
       >
         Volver
       </button>

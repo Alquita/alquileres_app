@@ -31,6 +31,8 @@
   .home-buttons {
     display: flex;
     gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .home-buttons .btn {
@@ -254,6 +256,21 @@
 
   .info-link:hover::after {
     width: 100%;
+  }
+
+  /* Estilos para la tabla de departamentos con 4 columnas */
+  .departamentos-table th {
+    width: 25%;
+  }
+
+  .departamentos-table td {
+    width: 25%;
+  }
+
+  .departamentos-table .renta-cell {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 500;
   }
 
   .info-container .btn {
