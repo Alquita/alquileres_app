@@ -195,8 +195,8 @@ function Info() {
     },
     {
       id: 'terreno-p-coego-pellegrini',
-      nombre: 'TERRENO P. COEGO Y PELLEGRINI',
-      direccion: 'Terreno P. Coego y Pellegrini',
+      nombre: 'TERRENO R. COEGO Y PELLEGRINI',
+      direccion: 'Terreno R. Coego y Pellegrini',
       rentas: '240644274644'
     }
   ]
