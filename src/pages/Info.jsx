@@ -10,7 +10,7 @@ function Info() {
       nombre: 'LOCAL', 
       direccion: 'Buenos Aires 660', 
       rentas: '240522467384',
-      municipal: ['1', '2', '163', '25', '9'],
+      municipal: ['1', '2', '58', '24', '1'],
       ecogas: '21249909',
       epec: '01520789 - 0024517105'
     },
@@ -19,7 +19,7 @@ function Info() {
       nombre: 'CASA', 
       direccion: 'Psje 12 de Octubre 1248', 
       rentas: '240517589161',
-      municipal: ['03', '01', '208', '17', '00'],
+      municipal: ['03', '01', '208', '11', '00'],
       ecogas: '22051944',
       epec: '1598382 - 0025288303'
     },
@@ -27,7 +27,7 @@ function Info() {
       id: 'casa-desantes', 
       nombre: 'CASA REARTES', 
       direccion: 'Reartes', 
-      rentas: '120190140683',
+      rentas: '120130140683',
       cooperativaLuz: '0610804E',
       comunaAgua: '16126'
     },
@@ -48,23 +48,19 @@ function Info() {
       direccion: '40 HAS 1',
       direccion2: '40 HAS 2',
       direccion3: '49 HAS',
-      rentas: '240602995720', 
+      rentas: '240602995730', 
       rentas2: '240602995756',
       rentas3: '240644408354'
     },
     { 
       id: 'casa-mama', 
       nombre: 'CASA MAMA', 
-      rentas: '240604807868',
-      ecogas: '145848382',
-      epec: '00 - 25'
+      rentas: '240604807868'
     },
     { 
       id: 'casa-jardin', 
       nombre: 'CASA JARDIN', 
-      rentas: '240621578996',
-      ecogas: '145813382',
-      epec: '00 - 25'
+      rentas: '240621578996'
     },
     {
       id: 'depto-vm',
@@ -79,6 +75,7 @@ function Info() {
     { 
       id: 'campo-fabian', 
       nombre: 'CAMPO', 
+      direccion: '98 HAS',
       rentas: '240604843082'
     },
     { 
@@ -115,21 +112,21 @@ function Info() {
     },
     {
       id: 'ruta-24-publica',
-      nombre: 'RUTA 24 PUBLICA',
-      direccion: 'Ruta 24 Publica',
+      nombre: 'RUTA 24 Y PUBLICA',
+      direccion: 'Ruta 24 y Publica',
       rentas: '240625512141'
     },
     {
       id: 'ruta-24-sabattini',
-      nombre: 'RUTA 24 SABATTINI',
-      direccion: 'Ruta 24 Sabattini',
+      nombre: 'RUTA 24 Y SABATTINI',
+      direccion: 'Ruta 24 y Sabattini',
       rentas: '240625512132'
     },
     {
       id: 'terreno-p-coego-pellegrini',
       nombre: 'TERRENO R. COEGO Y PELLEGRINI',
       direccion: 'Terreno R. Coego y Pellegrini',
-      rentas: '240644274644'
+      rentas: '240644274641'
     }
   ]
 

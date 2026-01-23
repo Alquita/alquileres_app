@@ -65,31 +65,29 @@ function Departamentos() {
       direccion2: 'Cochera 24', 
       rentas: '240543828905', 
       rentas2: '240543827941',
-      municipal: ['1', '2', '188', '100', '24'],
-      municipal2: ['1', '1', '69', '5', '42'],
-      ecogas: '2220516014',
-      epec: '21 - 17'
+      municipal: ['1', '2', '188', '100', '120'],
+      municipal2: ['1', '1', '188', '100', '24']
     },
     { 
       id: 'robles-viii', 
       nombre: 'ROBLES VIII', 
       direccion: 'Alberdi 1037 - Depto 1 A', 
       rentas: '240525517650',
-      municipal: ['1', '1', '60', '3', '14']
+      municipal: ['1', '2', '163', '25', '9']
     },
     { 
       id: 'mares-iii', 
       nombre: 'MARES III', 
       direccion: 'Baigorria 609 - Depto B 3', 
       rentas: '240542182441',
-      municipal: ['1', '1', '5', '9', '19']
+      municipal: ['1', '2', '79', '101', '66']
     },
     { 
       id: 'cielos-i', 
       nombre: 'CIELOS I', 
       direccion: 'San Martín 465 - Depto 3 A', 
       rentas: '240527342920',
-      municipal: ['1', '2', '205', '7', '13']
+      municipal: ['1', '1', '60', '3', '14']
     },
     { 
       id: 'robles-xiv', 
@@ -98,7 +96,7 @@ function Departamentos() {
       direccion2: 'Cochera', 
       rentas: '240527453462', 
       rentas2: '240527453209',
-      municipal: ['1', '1', '58', '24', '11'],
+      municipal: ['1', '1', '69', '5', '42'],
       municipal2: ['1', '1', '69', '5', '16'],
       ecogas: '21100705',
       epec: '01520789 - 0138872301'
@@ -162,43 +160,32 @@ function Departamentos() {
     }
   }
 
-  const maxLength = Math.max(deptosYani.length, deptosFabian.length)
+  // Determinar qué departamentos mostrar según la categoría
+  const deptosAMostrar = categoria === 'yani' ? deptosYani : deptosFabian
+  const personaActual = categoria === 'yani' ? 'yani' : 'fabian'
+  const tituloCategoria = categoria === 'yani' ? 'Yani' : 'Fabián'
 
   return (
     <div className="info-container">
-      <h2 className="info-title">Departamentos</h2>
+      <h2 className="info-title">Departamentos de {tituloCategoria}</h2>
 
       <table className="table info-table text-center align-middle">
         <thead>
           <tr>
-            <th>Yani</th>
-            <th>Fabián</th>
+            <th>{tituloCategoria}</th>
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: maxLength }).map((_, index) => (
-            <tr key={index}>
+          {deptosAMostrar.map((depto) => (
+            <tr key={depto.id}>
               <td>
-                {deptosYani[index] ? (
-                  <Link
-                    to={`/depto/yani/${deptosYani[index].id}`}
-                    state={getDeptoCompleto(deptosYani[index].id, 'yani')}
-                    className="info-link"
-                  >
-                    {deptosYani[index].nombre}
-                  </Link>
-                ) : null}
-              </td>
-              <td>
-                {deptosFabian[index] ? (
-                  <Link
-                    to={`/depto/fabian/${deptosFabian[index].id}`}
-                    state={getDeptoCompleto(deptosFabian[index].id, 'fabian')}
-                    className="info-link"
-                  >
-                    {deptosFabian[index].nombre}
-                  </Link>
-                ) : null}
+                <Link
+                  to={`/depto/${personaActual}/${depto.id}`}
+                  state={getDeptoCompleto(depto.id, personaActual)}
+                  className="info-link"
+                >
+                  {depto.nombre}
+                </Link>
               </td>
             </tr>
           ))}
@@ -207,7 +194,7 @@ function Departamentos() {
 
       <button
         className="btn btn-secondary mt-4"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/seleccion-departamentos')}
       >
         Volver
       </button>
