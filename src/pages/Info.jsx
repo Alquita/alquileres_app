@@ -10,7 +10,7 @@ function Info() {
       nombre: 'LOCAL', 
       direccion: 'Buenos Aires 660', 
       rentas: '240522467384',
-      municipal: ['1', '2', '58', '24', '1'],
+      municipal: ['1', '1', '58', '24', '1'],
       ecogas: '21249909',
       epec: '01520789 - 0024517105'
     },
