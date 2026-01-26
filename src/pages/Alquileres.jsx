@@ -1,10 +1,15 @@
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+
 function Alquileres() {
-    return (
-      <div>
-        <h2>Alquileres</h2>
-      </div>
-    )
-  }
-  
-  export default Alquileres
-  
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // Redirige automáticamente a la selección
+    navigate('/alquileres/seleccion')
+  }, [navigate])
+
+  return null
+}
+
+export default Alquileres
