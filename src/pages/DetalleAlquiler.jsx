@@ -33,13 +33,18 @@ function DetalleAlquiler() {
 
   // Detectar si es Puertas del Sol 2
   const esPuertasDelSol = tipo === 'departamentos' && propietario === 'yani' && id === 'puertas-del-sol'
+  
+  // Detectar si es Robles XIV de Fabián
+  const esRoblesXIVFabian = tipo === 'departamentos' && propietario === 'fabian' && id === 'robles-xiv-fabian'
 
   // Storage keys
   const storageKey = `alquiler-${tipo}-${propietario}-${id}`
   const storageKeyCochera = `alquiler-${tipo}-${propietario}-${id}-cochera`
+  const storageKeyDepto3C = `alquiler-${tipo}-${propietario}-${id}-depto3c`
   const contratoKey = `contrato-${tipo}-${propietario}-${id}`
   const notasGastosKey = `notas-gastos-${tipo}-${propietario}-${id}`
   const notasGastosKeyCochera = `notas-gastos-${tipo}-${propietario}-${id}-cochera`
+  const notasGastosKeyDepto3C = `notas-gastos-${tipo}-${propietario}-${id}-depto3c`
 
   // Departamentos que tienen contrato
   const tieneContrato = () => {
@@ -67,11 +72,27 @@ function DetalleAlquiler() {
     }))
   })
 
-  // Estado para datos de la cochera
+  // Estado para datos de la cochera (Puertas del Sol)
   const [datosCochera, setDatosCochera] = useState(() => {
     if (!esPuertasDelSol) return []
     
     const datosGuardados = localStorage.getItem(storageKeyCochera)
+    if (datosGuardados) {
+      return JSON.parse(datosGuardados)
+    }
+    return meses.map(mes => ({
+      mes,
+      alquiler: 0,
+      gastos: 0,
+      comisionAdm: 0
+    }))
+  })
+
+  // Estado para datos del Depto 3C (Robles XIV Fabián)
+  const [datosDepto3C, setDatosDepto3C] = useState(() => {
+    if (!esRoblesXIVFabian) return []
+    
+    const datosGuardados = localStorage.getItem(storageKeyDepto3C)
     if (datosGuardados) {
       return JSON.parse(datosGuardados)
     }
@@ -112,8 +133,22 @@ function DetalleAlquiler() {
     }, {})
   })
 
+  const [notasGastosDepto3C, setNotasGastosDepto3C] = useState(() => {
+    if (!esRoblesXIVFabian) return {}
+    
+    const notasGuardadas = localStorage.getItem(notasGastosKeyDepto3C)
+    if (notasGuardadas) {
+      return JSON.parse(notasGuardadas)
+    }
+    return meses.reduce((acc, mes) => {
+      acc[mes] = ''
+      return acc
+    }, {})
+  })
+
   const [notaEditando, setNotaEditando] = useState(null)
   const [notaEditandoCochera, setNotaEditandoCochera] = useState(null)
+  const [notaEditandoDepto3C, setNotaEditandoDepto3C] = useState(null)
 
   // Guardar datos principales
   useEffect(() => {
@@ -126,6 +161,13 @@ function DetalleAlquiler() {
       localStorage.setItem(storageKeyCochera, JSON.stringify(datosCochera))
     }
   }, [datosCochera, storageKeyCochera, esPuertasDelSol])
+
+  // Guardar datos Depto 3C
+  useEffect(() => {
+    if (esRoblesXIVFabian) {
+      localStorage.setItem(storageKeyDepto3C, JSON.stringify(datosDepto3C))
+    }
+  }, [datosDepto3C, storageKeyDepto3C, esRoblesXIVFabian])
 
   useEffect(() => {
     if (tieneContrato()) {
@@ -143,6 +185,12 @@ function DetalleAlquiler() {
     }
   }, [notasGastosCochera, notasGastosKeyCochera, esPuertasDelSol])
 
+  useEffect(() => {
+    if (esRoblesXIVFabian) {
+      localStorage.setItem(notasGastosKeyDepto3C, JSON.stringify(notasGastosDepto3C))
+    }
+  }, [notasGastosDepto3C, notasGastosKeyDepto3C, esRoblesXIVFabian])
+
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
     nuevosDatos[index][campo] = parseFloat(valor) || 0
@@ -153,6 +201,12 @@ function DetalleAlquiler() {
     const nuevosDatos = [...datosCochera]
     nuevosDatos[index][campo] = parseFloat(valor) || 0
     setDatosCochera(nuevosDatos)
+  }
+
+  const handleInputChangeDepto3C = (index, campo, valor) => {
+    const nuevosDatos = [...datosDepto3C]
+    nuevosDatos[index][campo] = parseFloat(valor) || 0
+    setDatosDepto3C(nuevosDatos)
   }
 
   const handleContratoChange = (e) => {
@@ -168,6 +222,13 @@ function DetalleAlquiler() {
 
   const handleNotaGastoChangeCochera = (mes, valor) => {
     setNotasGastosCochera(prev => ({
+      ...prev,
+      [mes]: valor
+    }))
+  }
+
+  const handleNotaGastoChangeDepto3C = (mes, valor) => {
+    setNotasGastosDepto3C(prev => ({
       ...prev,
       [mes]: valor
     }))
@@ -191,7 +252,7 @@ function DetalleAlquiler() {
           {/* Tabla principal */}
           <div className="alquiler-table-wrapper">
             <h3 className="subtitulo-tabla">
-              {esPuertasDelSol ? 'Depto 10 F' : 'Año 2026'}
+              {esPuertasDelSol ? 'Depto 10 F' : esRoblesXIVFabian ? 'Depto 4C' : 'Año 2026'}
             </h3>
             <table className="table table-bordered alquiler-table-excel">
               <thead>
@@ -377,6 +438,104 @@ function DetalleAlquiler() {
                     <td></td>
                     <td className="fw-bold">
                       ${formatearNumero(datosCochera.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+
+          {/* Tabla de Depto 3C solo para Robles XIV Fabián */}
+          {esRoblesXIVFabian && (
+            <div className="alquiler-table-wrapper">
+              <h3 className="subtitulo-tabla">Depto 3C</h3>
+              <table className="table table-bordered alquiler-table-excel">
+                <thead>
+                  <tr>
+                    <th className="text-center">AÑO 2026</th>
+                    <th className="text-center">Alquiler</th>
+                    <th className="text-center">Exp. Extraordinaria</th>
+                    <th className="text-center">Comisión Adm</th>
+                    <th className="text-center">Detalle</th>
+                    <th className="text-center">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {datosDepto3C.map((fila, index) => (
+                    <tr key={index}>
+                      <td className="mes-cell-excel">{fila.mes}</td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.alquiler || ''}
+                          onChange={(e) => handleInputChangeDepto3C(index, 'alquiler', e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.gastos || ''}
+                          onChange={(e) => handleInputChangeDepto3C(index, 'gastos', e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.comisionAdm || ''}
+                          onChange={(e) => handleInputChangeDepto3C(index, 'comisionAdm', e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                      <td className="detalle-cell">
+                        {notaEditandoDepto3C === fila.mes ? (
+                          <input
+                            type="text"
+                            className="form-control nota-gasto-input"
+                            value={notasGastosDepto3C[fila.mes] || ''}
+                            onChange={(e) => handleNotaGastoChangeDepto3C(fila.mes, e.target.value)}
+                            onBlur={() => setNotaEditandoDepto3C(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') setNotaEditandoDepto3C(null)
+                            }}
+                            autoFocus
+                            placeholder="Escribe aquí..."
+                          />
+                        ) : (
+                          <button
+                            className="nota-gasto-btn"
+                            onClick={() => setNotaEditandoDepto3C(fila.mes)}
+                            title="Click para editar detalle"
+                          >
+                            {notasGastosDepto3C[fila.mes] || '📝 Agregar detalle'}
+                          </button>
+                        )}
+                      </td>
+                      <td className="total-cell-excel">
+                        ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="total-row-excel">
+                    <td className="text-end fw-bold">TOTAL ANUAL:</td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + (f.alquiler || 0), 0))}
+                    </td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + (f.gastos || 0), 0))}
+                    </td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + (f.comisionAdm || 0), 0))}
+                    </td>
+                    <td></td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
                     </td>
                   </tr>
                 </tfoot>
