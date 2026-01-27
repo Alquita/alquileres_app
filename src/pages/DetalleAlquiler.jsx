@@ -41,7 +41,12 @@ function DetalleAlquiler() {
   const storageKey = `alquiler-${tipo}-${propietario}-${id}`
   const storageKeyCochera = `alquiler-${tipo}-${propietario}-${id}-cochera`
   const storageKeyDepto3C = `alquiler-${tipo}-${propietario}-${id}-depto3c`
-  const contratoKey = `contrato-${tipo}-${propietario}-${id}`
+  
+  // Keys de contrato SEPARADOS por tabla
+  const contratoKey = `contrato-${tipo}-${propietario}-${id}-principal`
+  const contratoKeyCochera = `contrato-${tipo}-${propietario}-${id}-cochera`
+  const contratoKeyDepto3C = `contrato-${tipo}-${propietario}-${id}-depto3c`
+  
   const notasGastosKey = `notas-gastos-${tipo}-${propietario}-${id}`
   const notasGastosKeyCochera = `notas-gastos-${tipo}-${propietario}-${id}-cochera`
   const notasGastosKeyDepto3C = `notas-gastos-${tipo}-${propietario}-${id}-depto3c`
@@ -52,7 +57,7 @@ function DetalleAlquiler() {
     
     const deptosConContrato = {
       yani: ['puertas-del-sol', 'robles-viii', 'mares-iii', 'cielos-i'],
-      fabian: ['egea-5', 'horenia-ii', 'marconi', 'robles-xiv-fabian', 'libertador-i']
+      fabian: ['egea-5', 'horenia-ii', 'marconi', 'robles-xiv-fabian', 'libertador-i', 'jeremias']
     }
     
     return deptosConContrato[propietario]?.includes(id)
@@ -104,8 +109,21 @@ function DetalleAlquiler() {
     }))
   })
 
+  // Estados de contrato SEPARADOS
   const [contrato, setContrato] = useState(() => {
     const contratoGuardado = localStorage.getItem(contratoKey)
+    return contratoGuardado || ''
+  })
+
+  const [contratoCochera, setContratoCochera] = useState(() => {
+    if (!esPuertasDelSol) return ''
+    const contratoGuardado = localStorage.getItem(contratoKeyCochera)
+    return contratoGuardado || ''
+  })
+
+  const [contratoDepto3C, setContratoDepto3C] = useState(() => {
+    if (!esRoblesXIVFabian) return ''
+    const contratoGuardado = localStorage.getItem(contratoKeyDepto3C)
     return contratoGuardado || ''
   })
 
@@ -169,11 +187,24 @@ function DetalleAlquiler() {
     }
   }, [datosDepto3C, storageKeyDepto3C, esRoblesXIVFabian])
 
+  // Guardar contratos SEPARADOS
   useEffect(() => {
     if (tieneContrato()) {
       localStorage.setItem(contratoKey, contrato)
     }
   }, [contrato, contratoKey])
+
+  useEffect(() => {
+    if (esPuertasDelSol && tieneContrato()) {
+      localStorage.setItem(contratoKeyCochera, contratoCochera)
+    }
+  }, [contratoCochera, contratoKeyCochera, esPuertasDelSol])
+
+  useEffect(() => {
+    if (esRoblesXIVFabian && tieneContrato()) {
+      localStorage.setItem(contratoKeyDepto3C, contratoDepto3C)
+    }
+  }, [contratoDepto3C, contratoKeyDepto3C, esRoblesXIVFabian])
 
   useEffect(() => {
     localStorage.setItem(notasGastosKey, JSON.stringify(notasGastos))
@@ -211,6 +242,14 @@ function DetalleAlquiler() {
 
   const handleContratoChange = (e) => {
     setContrato(e.target.value)
+  }
+
+  const handleContratoCocheraChange = (e) => {
+    setContratoCochera(e.target.value)
+  }
+
+  const handleContratoDepto3CChange = (e) => {
+    setContratoDepto3C(e.target.value)
   }
 
   const handleNotaGastoChange = (mes, valor) => {
@@ -441,7 +480,7 @@ function DetalleAlquiler() {
           </div>
         )}
 
-        {/* Tabla de cochera solo para Puertas del Sol - CON CONTRATO AL LADO */}
+        {/* Tabla de cochera solo para Puertas del Sol - CON CONTRATO PROPIO AL LADO */}
         {esPuertasDelSol && (
           <div className="alquiler-content-wrapper">
             <div className="alquiler-table-section">
@@ -536,8 +575,8 @@ function DetalleAlquiler() {
               <h3 className="contrato-title">Contrato</h3>
               <textarea
                 className="contrato-textarea"
-                value={contrato}
-                onChange={handleContratoChange}
+                value={contratoCochera}
+                onChange={handleContratoCocheraChange}
                 placeholder="Escribe aquí los detalles del contrato..."
                 rows="10"
               />
@@ -545,7 +584,7 @@ function DetalleAlquiler() {
           </div>
         )}
 
-        {/* Tabla de Depto 3C solo para Robles XIV Fabián - CON CONTRATO AL LADO */}
+        {/* Tabla de Depto 3C solo para Robles XIV Fabián - CON CONTRATO PROPIO AL LADO */}
         {esRoblesXIVFabian && (
           <div className="alquiler-content-wrapper">
             <div className="alquiler-table-section">
@@ -640,8 +679,8 @@ function DetalleAlquiler() {
               <h3 className="contrato-title">Contrato</h3>
               <textarea
                 className="contrato-textarea"
-                value={contrato}
-                onChange={handleContratoChange}
+                value={contratoDepto3C}
+                onChange={handleContratoDepto3CChange}
                 placeholder="Escribe aquí los detalles del contrato..."
                 rows="10"
               />
