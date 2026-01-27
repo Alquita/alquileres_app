@@ -1539,3 +1539,130 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
+
+  /* Input con símbolo de peso */
+.input-peso-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.peso-symbol {
+  position: absolute;
+  left: 10px;
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1.1rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.alquiler-input-excel-con-peso {
+  text-align: right;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.6rem 0.6rem 0.6rem 25px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  width: 100%;
+}
+
+.alquiler-input-excel-con-peso:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  transform: scale(1.02);
+  outline: none;
+}
+
+.subtitulo-tabla {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #667eea;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Input con símbolo de peso */
+.input-peso-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.peso-symbol {
+  position: absolute;
+  left: 10px;
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1.1rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.alquiler-input-excel-con-peso {
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.6rem 0.6rem 0.6rem 30px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  width: 100%;
+  text-align: left;
+}
+
+.alquiler-input-excel-con-peso:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  transform: scale(1.02);
+  outline: none;
+}
+
+.subtitulo-tabla {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #667eea;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Estilos para DetalleAlquiler */
+
+/* Contenedor de tablas */
+.alquiler-tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Sección de tabla */
+.alquiler-table-section {
+  flex: 1;
+}
+
+/* Input con símbolo de moneda */
+.input-with-currency {
+  position: relative;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #27ac9c; /* Color celeste/verde agua */
+  font-size: 16px; /* Un poco más grande */
+  font-weight: 500;
+}
+
+.input-with-currency .alquiler-input-excel {
+  padding-left: 24px !important;
+  text-align: left !important;
+}

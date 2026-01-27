@@ -247,13 +247,115 @@ function DetalleAlquiler() {
         {tituloPropietario} – {propiedad?.nombre || tituloTipo}
       </h2>
 
-      <div className="alquiler-content-wrapper">
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Tabla principal */}
+      <div className="alquiler-tables-container">
+        {/* Tabla principal - CON CONTRATO AL LADO para departamentos con contrato */}
+        {tieneContrato() ? (
+          <div className="alquiler-content-wrapper">
+            <div className="alquiler-table-section">
+              <div className="alquiler-table-wrapper">
+                <h3 className="subtitulo-tabla">
+                  {esPuertasDelSol ? 'Depto 10 F' : esRoblesXIVFabian ? 'Depto 4C' : 'Año 2026'}
+                </h3>
+                <table className="table table-bordered alquiler-table-excel">
+                  <thead>
+                    <tr>
+                      <th className="text-center">AÑO 2026</th>
+                      <th className="text-center">Alquiler</th>
+                      <th className="text-center">Exp. Extraordinaria</th>
+                      <th className="text-center">Comisión Adm</th>
+                      <th className="text-center">Detalle</th>
+                      <th className="text-center">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {datos.map((fila, index) => (
+                      <tr key={index}>
+                        <td className="mes-cell-excel">{fila.mes}</td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.alquiler || ''}
+                              onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.gastos || ''}
+                              onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.comisionAdm || ''}
+                              onChange={(e) => handleInputChange(index, 'comisionAdm', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td className="detalle-cell">
+                          {notaEditando === fila.mes ? (
+                            <input
+                              type="text"
+                              className="form-control nota-gasto-input"
+                              value={notasGastos[fila.mes] || ''}
+                              onChange={(e) => handleNotaGastoChange(fila.mes, e.target.value)}
+                              onBlur={() => setNotaEditando(null)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') setNotaEditando(null)
+                              }}
+                              autoFocus
+                              placeholder="Escribe aquí..."
+                            />
+                          ) : (
+                            <button
+                              className="nota-gasto-btn"
+                              onClick={() => setNotaEditando(fila.mes)}
+                              title="Click para editar detalle"
+                            >
+                              {notasGastos[fila.mes] || '📝 Agregar detalle'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="total-cell-excel">
+                          ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="contrato-box">
+              <h3 className="contrato-title">Contrato</h3>
+              <textarea
+                className="contrato-textarea"
+                value={contrato}
+                onChange={handleContratoChange}
+                placeholder="Escribe aquí los detalles del contrato..."
+                rows="10"
+              />
+            </div>
+          </div>
+        ) : (
+          // Tabla principal SIN CONTRATO para otros departamentos
           <div className="alquiler-table-wrapper">
-            <h3 className="subtitulo-tabla">
-              {esPuertasDelSol ? 'Depto 10 F' : esRoblesXIVFabian ? 'Depto 4C' : 'Año 2026'}
-            </h3>
+            <h3 className="subtitulo-tabla">Año 2026</h3>
             <table className="table table-bordered alquiler-table-excel">
               <thead>
                 <tr>
@@ -270,31 +372,40 @@ function DetalleAlquiler() {
                   <tr key={index}>
                     <td className="mes-cell-excel">{fila.mes}</td>
                     <td>
-                      <input
-                        type="number"
-                        className="form-control alquiler-input-excel"
-                        value={fila.alquiler || ''}
-                        onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
-                        placeholder="0"
-                      />
+                      <div className="input-with-currency">
+                        <span className="currency-symbol">$</span>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.alquiler || ''}
+                          onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
+                          placeholder="0"
+                        />
+                      </div>
                     </td>
                     <td>
-                      <input
-                        type="number"
-                        className="form-control alquiler-input-excel"
-                        value={fila.gastos || ''}
-                        onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
-                        placeholder="0"
-                      />
+                      <div className="input-with-currency">
+                        <span className="currency-symbol">$</span>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.gastos || ''}
+                          onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
+                          placeholder="0"
+                        />
+                      </div>
                     </td>
                     <td>
-                      <input
-                        type="number"
-                        className="form-control alquiler-input-excel"
-                        value={fila.comisionAdm || ''}
-                        onChange={(e) => handleInputChange(index, 'comisionAdm', e.target.value)}
-                        placeholder="0"
-                      />
+                      <div className="input-with-currency">
+                        <span className="currency-symbol">$</span>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.comisionAdm || ''}
+                          onChange={(e) => handleInputChange(index, 'comisionAdm', e.target.value)}
+                          placeholder="0"
+                        />
+                      </div>
                     </td>
                     <td className="detalle-cell">
                       {notaEditando === fila.mes ? (
@@ -326,234 +437,215 @@ function DetalleAlquiler() {
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
-                <tr className="total-row-excel">
-                  <td className="text-end fw-bold">TOTAL ANUAL:</td>
-                  <td className="fw-bold">
-                    ${formatearNumero(datos.reduce((sum, f) => sum + (f.alquiler || 0), 0))}
-                  </td>
-                  <td className="fw-bold">
-                    ${formatearNumero(datos.reduce((sum, f) => sum + (f.gastos || 0), 0))}
-                  </td>
-                  <td className="fw-bold">
-                    ${formatearNumero(datos.reduce((sum, f) => sum + (f.comisionAdm || 0), 0))}
-                  </td>
-                  <td></td>
-                  <td className="fw-bold">
-                    ${formatearNumero(datos.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
-                  </td>
-                </tr>
-              </tfoot>
             </table>
           </div>
+        )}
 
-          {/* Tabla de cochera solo para Puertas del Sol */}
-          {esPuertasDelSol && (
-            <div className="alquiler-table-wrapper">
-              <h3 className="subtitulo-tabla">Cochera 24</h3>
-              <table className="table table-bordered alquiler-table-excel">
-                <thead>
-                  <tr>
-                    <th className="text-center">AÑO 2026</th>
-                    <th className="text-center">Alquiler</th>
-                    <th className="text-center">Exp. Extraordinaria</th>
-                    <th className="text-center">Comisión Adm</th>
-                    <th className="text-center">Detalle</th>
-                    <th className="text-center">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {datosCochera.map((fila, index) => (
-                    <tr key={index}>
-                      <td className="mes-cell-excel">{fila.mes}</td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
-                          value={fila.alquiler || ''}
-                          onChange={(e) => handleInputChangeCochera(index, 'alquiler', e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
-                          value={fila.gastos || ''}
-                          onChange={(e) => handleInputChangeCochera(index, 'gastos', e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
-                          value={fila.comisionAdm || ''}
-                          onChange={(e) => handleInputChangeCochera(index, 'comisionAdm', e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                      <td className="detalle-cell">
-                        {notaEditandoCochera === fila.mes ? (
-                          <input
-                            type="text"
-                            className="form-control nota-gasto-input"
-                            value={notasGastosCochera[fila.mes] || ''}
-                            onChange={(e) => handleNotaGastoChangeCochera(fila.mes, e.target.value)}
-                            onBlur={() => setNotaEditandoCochera(null)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') setNotaEditandoCochera(null)
-                            }}
-                            autoFocus
-                            placeholder="Escribe aquí..."
-                          />
-                        ) : (
-                          <button
-                            className="nota-gasto-btn"
-                            onClick={() => setNotaEditandoCochera(fila.mes)}
-                            title="Click para editar detalle"
-                          >
-                            {notasGastosCochera[fila.mes] || '📝 Agregar detalle'}
-                          </button>
-                        )}
-                      </td>
-                      <td className="total-cell-excel">
-                        ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
-                      </td>
+        {/* Tabla de cochera solo para Puertas del Sol - CON CONTRATO AL LADO */}
+        {esPuertasDelSol && (
+          <div className="alquiler-content-wrapper">
+            <div className="alquiler-table-section">
+              <div className="alquiler-table-wrapper">
+                <h3 className="subtitulo-tabla">Cochera 24</h3>
+                <table className="table table-bordered alquiler-table-excel">
+                  <thead>
+                    <tr>
+                      <th className="text-center">AÑO 2026</th>
+                      <th className="text-center">Alquiler</th>
+                      <th className="text-center">Exp. Extraordinaria</th>
+                      <th className="text-center">Comisión Adm</th>
+                      <th className="text-center">Detalle</th>
+                      <th className="text-center">Total</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="total-row-excel">
-                    <td className="text-end fw-bold">TOTAL ANUAL:</td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + (f.alquiler || 0), 0))}
-                    </td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + (f.gastos || 0), 0))}
-                    </td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + (f.comisionAdm || 0), 0))}
-                    </td>
-                    <td></td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </thead>
+                  <tbody>
+                    {datosCochera.map((fila, index) => (
+                      <tr key={index}>
+                        <td className="mes-cell-excel">{fila.mes}</td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.alquiler || ''}
+                              onChange={(e) => handleInputChangeCochera(index, 'alquiler', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.gastos || ''}
+                              onChange={(e) => handleInputChangeCochera(index, 'gastos', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.comisionAdm || ''}
+                              onChange={(e) => handleInputChangeCochera(index, 'comisionAdm', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td className="detalle-cell">
+                          {notaEditandoCochera === fila.mes ? (
+                            <input
+                              type="text"
+                              className="form-control nota-gasto-input"
+                              value={notasGastosCochera[fila.mes] || ''}
+                              onChange={(e) => handleNotaGastoChangeCochera(fila.mes, e.target.value)}
+                              onBlur={() => setNotaEditandoCochera(null)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') setNotaEditandoCochera(null)
+                              }}
+                              autoFocus
+                              placeholder="Escribe aquí..."
+                            />
+                          ) : (
+                            <button
+                              className="nota-gasto-btn"
+                              onClick={() => setNotaEditandoCochera(fila.mes)}
+                              title="Click para editar detalle"
+                            >
+                              {notasGastosCochera[fila.mes] || '📝 Agregar detalle'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="total-cell-excel">
+                          ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
 
-          {/* Tabla de Depto 3C solo para Robles XIV Fabián */}
-          {esRoblesXIVFabian && (
-            <div className="alquiler-table-wrapper">
-              <h3 className="subtitulo-tabla">Depto 3C</h3>
-              <table className="table table-bordered alquiler-table-excel">
-                <thead>
-                  <tr>
-                    <th className="text-center">AÑO 2026</th>
-                    <th className="text-center">Alquiler</th>
-                    <th className="text-center">Exp. Extraordinaria</th>
-                    <th className="text-center">Comisión Adm</th>
-                    <th className="text-center">Detalle</th>
-                    <th className="text-center">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {datosDepto3C.map((fila, index) => (
-                    <tr key={index}>
-                      <td className="mes-cell-excel">{fila.mes}</td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
-                          value={fila.alquiler || ''}
-                          onChange={(e) => handleInputChangeDepto3C(index, 'alquiler', e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
-                          value={fila.gastos || ''}
-                          onChange={(e) => handleInputChangeDepto3C(index, 'gastos', e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
-                          value={fila.comisionAdm || ''}
-                          onChange={(e) => handleInputChangeDepto3C(index, 'comisionAdm', e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                      <td className="detalle-cell">
-                        {notaEditandoDepto3C === fila.mes ? (
-                          <input
-                            type="text"
-                            className="form-control nota-gasto-input"
-                            value={notasGastosDepto3C[fila.mes] || ''}
-                            onChange={(e) => handleNotaGastoChangeDepto3C(fila.mes, e.target.value)}
-                            onBlur={() => setNotaEditandoDepto3C(null)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') setNotaEditandoDepto3C(null)
-                            }}
-                            autoFocus
-                            placeholder="Escribe aquí..."
-                          />
-                        ) : (
-                          <button
-                            className="nota-gasto-btn"
-                            onClick={() => setNotaEditandoDepto3C(fila.mes)}
-                            title="Click para editar detalle"
-                          >
-                            {notasGastosDepto3C[fila.mes] || '📝 Agregar detalle'}
-                          </button>
-                        )}
-                      </td>
-                      <td className="total-cell-excel">
-                        ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
-                      </td>
+            <div className="contrato-box">
+              <h3 className="contrato-title">Contrato</h3>
+              <textarea
+                className="contrato-textarea"
+                value={contrato}
+                onChange={handleContratoChange}
+                placeholder="Escribe aquí los detalles del contrato..."
+                rows="10"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tabla de Depto 3C solo para Robles XIV Fabián - CON CONTRATO AL LADO */}
+        {esRoblesXIVFabian && (
+          <div className="alquiler-content-wrapper">
+            <div className="alquiler-table-section">
+              <div className="alquiler-table-wrapper">
+                <h3 className="subtitulo-tabla">Depto 3C</h3>
+                <table className="table table-bordered alquiler-table-excel">
+                  <thead>
+                    <tr>
+                      <th className="text-center">AÑO 2026</th>
+                      <th className="text-center">Alquiler</th>
+                      <th className="text-center">Exp. Extraordinaria</th>
+                      <th className="text-center">Comisión Adm</th>
+                      <th className="text-center">Detalle</th>
+                      <th className="text-center">Total</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="total-row-excel">
-                    <td className="text-end fw-bold">TOTAL ANUAL:</td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + (f.alquiler || 0), 0))}
-                    </td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + (f.gastos || 0), 0))}
-                    </td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + (f.comisionAdm || 0), 0))}
-                    </td>
-                    <td></td>
-                    <td className="fw-bold">
-                      ${formatearNumero(datosDepto3C.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </thead>
+                  <tbody>
+                    {datosDepto3C.map((fila, index) => (
+                      <tr key={index}>
+                        <td className="mes-cell-excel">{fila.mes}</td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.alquiler || ''}
+                              onChange={(e) => handleInputChangeDepto3C(index, 'alquiler', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.gastos || ''}
+                              onChange={(e) => handleInputChangeDepto3C(index, 'gastos', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-with-currency">
+                            <span className="currency-symbol">$</span>
+                            <input
+                              type="number"
+                              className="form-control alquiler-input-excel"
+                              value={fila.comisionAdm || ''}
+                              onChange={(e) => handleInputChangeDepto3C(index, 'comisionAdm', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </td>
+                        <td className="detalle-cell">
+                          {notaEditandoDepto3C === fila.mes ? (
+                            <input
+                              type="text"
+                              className="form-control nota-gasto-input"
+                              value={notasGastosDepto3C[fila.mes] || ''}
+                              onChange={(e) => handleNotaGastoChangeDepto3C(fila.mes, e.target.value)}
+                              onBlur={() => setNotaEditandoDepto3C(null)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') setNotaEditandoDepto3C(null)
+                              }}
+                              autoFocus
+                              placeholder="Escribe aquí..."
+                            />
+                          ) : (
+                            <button
+                              className="nota-gasto-btn"
+                              onClick={() => setNotaEditandoDepto3C(fila.mes)}
+                              title="Click para editar detalle"
+                            >
+                              {notasGastosDepto3C[fila.mes] || '📝 Agregar detalle'}
+                            </button>
+                          )}
+                        </td>
+                        <td className="total-cell-excel">
+                          ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
 
-        {tieneContrato() && (
-          <div className="contrato-box">
-            <h3 className="contrato-title">Contrato</h3>
-            <textarea
-              className="contrato-textarea"
-              value={contrato}
-              onChange={handleContratoChange}
-              placeholder="Escribe aquí los detalles del contrato..."
-              rows="10"
-            />
+            <div className="contrato-box">
+              <h3 className="contrato-title">Contrato</h3>
+              <textarea
+                className="contrato-textarea"
+                value={contrato}
+                onChange={handleContratoChange}
+                placeholder="Escribe aquí los detalles del contrato..."
+                rows="10"
+              />
+            </div>
           </div>
         )}
       </div>
