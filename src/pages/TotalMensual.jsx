@@ -27,7 +27,7 @@ function TotalMensual() {
     }).format(numero)
   }
 
-  // Todas las propiedades (departamentos y casas) - SOLO PRINCIPAL, NO COCHERA
+  // Todas las propiedades principales
   const todasLasPropiedades = [
     // Departamentos Yani
     { tipo: 'departamentos', propietario: 'yani', id: 'puertas-del-sol', nombre: 'Puertas del Sol 2' },
@@ -54,6 +54,17 @@ function TotalMensual() {
     { tipo: 'casas', propietario: 'fabian', id: 'SUPAGA', nombre: 'Supaga' }
   ]
 
+  // Tablas secundarias que también hay que sumar
+  const tablasSecundarias = [
+    {
+      tipo: 'departamentos',
+      propietario: 'fabian',
+      id: 'robles-xiv-fabian',
+      sufijo: 'depto3c',
+      nombre: 'Depto 3C (Robles XIV)'
+    }
+  ]
+
   const [totalesMensuales, setTotalesMensuales] = useState([])
   const [porcentajeComision, setPorcentajeComision] = useState(() => {
     const guardado = localStorage.getItem('porcentaje-comision')
@@ -72,8 +83,7 @@ function TotalMensual() {
     const totales = meses.map((mes, mesIndex) => {
       let totalMes = 0
 
-      // Recorrer todas las propiedades y sumar el total del mes
-      // IMPORTANTE: Solo usamos la key principal, no la de cochera
+      // 1. Sumar todas las propiedades principales
       todasLasPropiedades.forEach(propiedad => {
         const storageKey = `alquiler-${propiedad.tipo}-${propiedad.propietario}-${propiedad.id}`
         const datosGuardados = localStorage.getItem(storageKey)
@@ -86,6 +96,23 @@ function TotalMensual() {
             // Total = alquiler - gastos - comisionAdm
             const totalDepto = (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
             totalMes += totalDepto
+          }
+        }
+      })
+
+      // 2. Sumar también las tablas secundarias (Cochera 24 y Depto 3C)
+      tablasSecundarias.forEach(tablaSecundaria => {
+        const storageKey = `alquiler-${tablaSecundaria.tipo}-${tablaSecundaria.propietario}-${tablaSecundaria.id}-${tablaSecundaria.sufijo}`
+        const datosGuardados = localStorage.getItem(storageKey)
+        
+        if (datosGuardados) {
+          const datos = JSON.parse(datosGuardados)
+          const datosMes = datos[mesIndex]
+          
+          if (datosMes) {
+            // Total = alquiler - gastos - comisionAdm
+            const totalTablaSecundaria = (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
+            totalMes += totalTablaSecundaria
           }
         }
       })
