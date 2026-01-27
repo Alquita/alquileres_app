@@ -1,326 +1,1000 @@
-/* Reset mínimo */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Home layout */
-  .home-container {
-    height: 100vh;
-    width: 100vw;
-  
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-  
-  .home-title {
-    margin-bottom: 4rem;
-    font-size: 3.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    letter-spacing: 1px;
-  }
-  
-  .home-buttons {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .home-buttons .btn {
-    padding: 1rem 3rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-    border-radius: 50px;
-    border: none;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .home-buttons .btn-primary {
-    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-  }
-
-  .home-buttons .btn-success {
-    background: linear-gradient(135deg, #198754 0%, #146c43 100%);
-  }
-
-  .home-buttons .btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-  }
-
-  .home-buttons .btn:active {
-    transform: translateY(-2px);
-  }
-
-  /* INFO */
-.info-container {
-    min-height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 2rem;
-    padding-bottom: 4rem;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* Efecto de partículas flotantes en el fondo */
-  .info-container::before,
-  .info-container::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    animation: float 20s infinite ease-in-out;
-  }
-
-  .info-container::before {
-    width: 300px;
-    height: 300px;
-    top: 10%;
-    left: 5%;
-    animation-delay: 0s;
-  }
-
-  .info-container::after {
-    width: 200px;
-    height: 200px;
-    bottom: 15%;
-    right: 10%;
-    animation-delay: 5s;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0) translateX(0) scale(1);
-      opacity: 0.3;
+  /* Reset mínimo */
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    50% {
-      transform: translateY(-50px) translateX(30px) scale(1.1);
-      opacity: 0.6;
+    
+    /* Home layout */
+    .home-container {
+      height: 100vh;
+      width: 100vw;
+    
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-  }
-  
-  .info-title {
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-    text-align: center;
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.8s ease-out;
-    position: relative;
-    z-index: 1;
-  }
+    
+    .home-title {
+      margin-bottom: 4rem;
+      font-size: 3.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: 1px;
+    }
+    
+    .home-buttons {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
+    .home-buttons .btn {
+      padding: 1rem 3rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .info-table {
-    width: 95%;
-    max-width: 1200px;
-    margin: 0 auto 2rem;
-    background-color: #ffffff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    table-layout: fixed;
-    animation: fadeInUp 1s ease-out 0.3s backwards;
-    position: relative;
-    z-index: 1;
-  }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
+    .home-buttons .btn-primary {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+
+    .home-buttons .btn-success {
+      background: linear-gradient(135deg, #198754 0%, #146c43 100%);
     }
-  }
-  
-  .info-table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-size: 1.2rem;
-    padding: 1.3rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    width: 33.33%;
-    position: relative;
-    overflow: hidden;
-  }
 
-  .info-table th::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    animation: shimmer 3s infinite;
-  }
+    .home-buttons .btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
 
-  @keyframes shimmer {
-    0% {
+    .home-buttons .btn:active {
+      transform: translateY(-2px);
+    }
+
+    /* INFO */
+  .info-container {
+      min-height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem;
+      padding-bottom: 4rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Efecto de partículas flotantes en el fondo */
+    .info-container::before,
+    .info-container::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .info-container::before {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    .info-container::after {
+      width: 200px;
+      height: 200px;
+      bottom: 15%;
+      right: 10%;
+      animation-delay: 5s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.3;
+      }
+      50% {
+        transform: translateY(-50px) translateX(30px) scale(1.1);
+        opacity: 0.6;
+      }
+    }
+    
+    .info-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      animation: slideDown 0.8s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .info-table {
+      width: 95%;
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      table-layout: fixed;
+      animation: fadeInUp 1s ease-out 0.3s backwards;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .info-table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 1.2rem;
+      padding: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      width: 33.33%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-table th::before {
+      content: '';
+      position: absolute;
+      top: 0;
       left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      animation: shimmer 3s infinite;
     }
-    50%, 100% {
-      left: 100%;
+
+    @keyframes shimmer {
+      0% {
+        left: -100%;
+      }
+      50%, 100% {
+        left: 100%;
+      }
     }
-  }
-  
-  .info-table td {
-    padding: 1.3rem 0.8rem;
-    font-size: 1rem;
-    border-bottom: 1px solid #e9ecef;
-    transition: all 0.3s ease;
-    vertical-align: middle;
-    text-align: center;
-    width: 33.33%;
-  }
+    
+    .info-table td {
+      padding: 1.3rem 0.8rem;
+      font-size: 1rem;
+      border-bottom: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+      vertical-align: middle;
+      text-align: center;
+      width: 33.33%;
+    }
 
-  .info-table tbody tr {
-    transition: all 0.3s ease;
-  }
+    .info-table tbody tr {
+      transition: all 0.3s ease;
+    }
 
-  .info-table tbody tr:last-child td {
-    border-bottom: none;
-  }
+    .info-table tbody tr:last-child td {
+      border-bottom: none;
+    }
 
-  .info-table tbody tr:hover {
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
+    .info-table tbody tr:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
 
-  .info-table tbody tr:hover td {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  }
-  
-  .info-link {
-    text-decoration: none;
-    font-weight: 600;
-    color: #667eea;
-    transition: all 0.3s ease;
-    display: inline-block;
-    word-wrap: break-word;
-    max-width: 100%;
-    position: relative;
-    padding: 0.3rem 0;
-  }
+    .info-table tbody tr:hover td {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .info-link {
+      text-decoration: none;
+      font-weight: 600;
+      color: #667eea;
+      transition: all 0.3s ease;
+      display: inline-block;
+      word-wrap: break-word;
+      max-width: 100%;
+      position: relative;
+      padding: 0.3rem 0;
+    }
 
-  .info-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    transition: all 0.3s ease;
-    transform: translateX(-50%);
-  }
-  
-  .info-link:hover {
-    color: #764ba2;
-    transform: translateY(-2px);
-    text-decoration: none;
-  }
+    .info-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+    
+    .info-link:hover {
+      color: #764ba2;
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
 
-  .info-link:hover::after {
-    width: 100%;
-  }
+    .info-link:hover::after {
+      width: 100%;
+    }
 
-  /* Estilos para la tabla de departamentos con 4 columnas */
-  .departamentos-table th {
-    width: 25%;
-  }
+    /* Estilos para la tabla de departamentos con 4 columnas */
+    .departamentos-table th {
+      width: 25%;
+    }
 
-  .departamentos-table td {
-    width: 25%;
-  }
+    .departamentos-table td {
+      width: 25%;
+    }
 
-  .departamentos-table .renta-cell {
-    font-size: 0.9rem;
-    color: #495057;
-    font-weight: 500;
-  }
+    .departamentos-table .renta-cell {
+      font-size: 0.9rem;
+      color: #495057;
+      font-weight: 500;
+    }
 
-  .info-container .btn {
-    padding: 0.8rem 2.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    border: none;
-    background-color: #ffffff;
-    color: #667eea;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    margin-top: 1rem;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    animation: fadeInUp 1s ease-out 0.6s backwards;
-  }
+    .info-container .btn {
+      padding: 0.8rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      background-color: #ffffff;
+      color: #667eea;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: fadeInUp 1s ease-out 0.6s backwards;
+    }
 
-  .info-container .btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(102, 126, 234, 0.1);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-    z-index: -1;
-  }
+    .info-container .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.1);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+      z-index: -1;
+    }
 
-  .info-container .btn:hover::before {
-    width: 300px;
-    height: 300px;
-  }
+    .info-container .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
 
-  .info-container .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-    background-color: #f8f9fa;
-  }
+    .info-container .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+      background-color: #f8f9fa;
+    }
 
-  .info-container .btn:active {
-    transform: translateY(-1px);
-  }
+    .info-container .btn:active {
+      transform: translateY(-1px);
+    }
 
-  /* DEPTO DETAIL */
-.depto-container {
+    /* DEPTO DETAIL */
+  .depto-container {
+      min-height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem;
+      padding-bottom: 4rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Efecto de partículas flotantes en el fondo */
+    .depto-container::before,
+    .depto-container::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .depto-container::before {
+      width: 400px;
+      height: 400px;
+      top: 5%;
+      right: 5%;
+      animation-delay: 0s;
+    }
+
+    .depto-container::after {
+      width: 250px;
+      height: 250px;
+      bottom: 10%;
+      left: 10%;
+      animation-delay: 7s;
+    }
+    
+    .depto-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 3rem;
+      margin-top: 2rem;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      animation: slideDown 0.8s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .depto-info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 95%;
+      max-width: 1400px;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .depto-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      animation: fadeInUp 0.8s ease-out backwards;
+    }
+
+    .depto-row:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .depto-row:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    .depto-row:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    .depto-row + .depto-row {
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .depto-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .depto-info-card {
+      background-color: #ffffff;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .depto-info-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .depto-info-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .depto-info-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .depto-info-label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .depto-info-label::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+    
+    .depto-info-value {
+      font-size: 1.3rem;
+      color: #212529;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .depto-container .btn {
+      padding: 0.8rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      background-color: #ffffff;
+      color: #667eea;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: fadeInUp 1s ease-out 0.8s backwards;
+    }
+
+    .depto-container .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.1);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+      z-index: -1;
+    }
+
+    .depto-container .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .depto-container .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+      background-color: #f8f9fa;
+    }
+
+    .depto-container .btn:active {
+      transform: translateY(-1px);
+    }
+
+    /* RENTA STYLES */
+  .renta-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    
+    .renta-link {
+      font-size: 1.3rem;
+      color: #667eea;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.2rem 0;
+    }
+
+    .renta-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s ease;
+    }
+    
+    .renta-link:hover {
+      color: #764ba2;
+      text-decoration: none;
+    }
+
+    .renta-link:hover::after {
+      width: 100%;
+    }
+    
+    .copy-btn {
+      background-color: transparent;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      color: #667eea;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .copy-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s;
+    }
+
+    .copy-btn:hover::before {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .copy-btn:hover {
+      background-color: #667eea;
+      color: white;
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .copy-btn:active {
+      transform: scale(0.95);
+      animation: pulse 0.4s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(0.95);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+    
+    .copy-btn svg {
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* MUNICIPAL STYLES */
+  .municipal-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .municipal-links {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .municipal-link-btn {
+      padding: 0.6rem 1.2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .municipal-link-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.5s, height 0.5s;
+    }
+
+    .municipal-link-btn:hover::before {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .municipal-link-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    .municipal-link-btn:active {
+      transform: translateY(-1px) scale(1.02);
+    }
+    
+    .municipal-digits {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    
+    .digit-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      animation: fadeIn 0.5s ease backwards;
+    }
+
+    .digit-container:nth-child(1) { animation-delay: 0.1s; }
+    .digit-container:nth-child(2) { animation-delay: 0.2s; }
+    .digit-container:nth-child(3) { animation-delay: 0.3s; }
+    .digit-container:nth-child(4) { animation-delay: 0.4s; }
+    .digit-container:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .digit-value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #212529;
+      padding: 0.4rem 0.8rem;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      min-width: 50px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .digit-container:hover .digit-value {
+      transform: translateY(-3px) scale(1.1);
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .copy-digit-btn {
+      background-color: transparent;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      padding: 0.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      color: #667eea;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .copy-digit-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s;
+    }
+
+    .copy-digit-btn:hover::before {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .copy-digit-btn:hover {
+      background-color: #667eea;
+      color: white;
+      transform: scale(1.2) rotate(10deg);
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+    }
+    
+    .copy-digit-btn:active {
+      transform: scale(0.9);
+      animation: pulse 0.4s ease;
+    }
+
+    .copy-digit-btn svg {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* PATENTES STYLES */
+  .patentes-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .patentes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .patente-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      width: 100%;
+      justify-content: center;
+      animation: slideInRight 0.5s ease backwards;
+    }
+
+    .patente-item:nth-child(1) { animation-delay: 0.1s; }
+    .patente-item:nth-child(2) { animation-delay: 0.2s; }
+    .patente-item:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .patente-link {
+      font-size: 1.3rem;
+      color: #667eea;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      min-width: 120px;
+      text-align: center;
+      position: relative;
+      padding: 0.3rem 0;
+    }
+
+    .patente-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s ease;
+    }
+    
+    .patente-link:hover {
+      color: #764ba2;
+      text-decoration: none;
+      transform: scale(1.05);
+    }
+
+    .patente-link:hover::after {
+      width: 100%;
+    }
+    
+    .copy-patente-btn {
+      background-color: transparent;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      padding: 0.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      color: #667eea;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .copy-patente-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s;
+    }
+
+    .copy-patente-btn:hover::before {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .copy-patente-btn:hover {
+      background-color: #667eea;
+      color: white;
+      transform: scale(1.2) rotate(-5deg);
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+    }
+    
+    .copy-patente-btn:active {
+      transform: scale(0.9);
+      animation: pulse 0.4s ease;
+    }
+
+    .copy-patente-btn svg {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Estilos adicionales para el formato especial de farmacia */
+
+  .farmacia-digits {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    
+    .digit-separator {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #667eea;
+      margin: 0 0.25rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .alquiler-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .alquiler-title {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .alquiler-table {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .alquiler-table thead {
+      background: #667eea;
+      color: white;
+    }
+    
+    .alquiler-table thead th {
+      padding: 1rem;
+      font-weight: 600;
+    }
+    
+    .mes-cell {
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      background: #f8f9fa;
+    }
+    
+    .alquiler-input {
+      text-align: right;
+      font-weight: 500;
+    }
+    
+    .total-cell {
+      text-align: right;
+      font-weight: 600;
+      color: #667eea;
+      padding: 0.75rem 1rem;
+    }
+    
+    .total-row {
+      background: #f0f4ff;
+      font-size: 1.1rem;
+    }
+    
+    .total-row td {
+      padding: 1rem;
+      text-align: right;
+    }
+
+    .mitad-cell {
+      background-color: #e7f3ff;
+      font-weight: 600;
+      color: #0066cc;
+    }
+    
+    .total-row .mitad-cell {
+      background-color: #d0e7ff;
+      font-size: 1.1rem;
+    }
+
+  /* ALQUILERES PAGE STYLES */
+  .alquiler-page-container {
     min-height: 100vh;
     width: 100vw;
     display: flex;
@@ -334,9 +1008,9 @@
     position: relative;
   }
 
-  /* Efecto de partículas flotantes en el fondo */
-  .depto-container::before,
-  .depto-container::after {
+  /* Efecto de partículas flotantes */
+  .alquiler-page-container::before,
+  .alquiler-page-container::after {
     content: '';
     position: absolute;
     border-radius: 50%;
@@ -344,23 +1018,23 @@
     animation: float 20s infinite ease-in-out;
   }
 
-  .depto-container::before {
-    width: 400px;
-    height: 400px;
-    top: 5%;
-    right: 5%;
+  .alquiler-page-container::before {
+    width: 350px;
+    height: 350px;
+    top: 8%;
+    left: 8%;
     animation-delay: 0s;
   }
 
-  .depto-container::after {
-    width: 250px;
-    height: 250px;
-    bottom: 10%;
-    left: 10%;
-    animation-delay: 7s;
+  .alquiler-page-container::after {
+    width: 280px;
+    height: 280px;
+    bottom: 12%;
+    right: 8%;
+    animation-delay: 6s;
   }
-  
-  .depto-title {
+
+  .alquiler-page-title {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 3rem;
@@ -372,111 +1046,191 @@
     position: relative;
     z-index: 1;
   }
-  
-  .depto-info-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+
+  .alquiler-table-wrapper {
     width: 95%;
-    max-width: 1400px;
-    margin-bottom: 2rem;
+    max-width: 1200px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15);
+    animation: fadeInUp 1s ease-out 0.3s backwards;
     position: relative;
+    z-index: 1;
+    margin-bottom: 2rem;
+  }
+
+  .alquiler-table-excel {
+    margin: 0;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .alquiler-table-excel thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+  }
+
+  .alquiler-table-excel thead th {
+    color: black;
+    font-weight: 600;
+    padding: 1.3rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    border: none;
+    position: relative;
+    overflow: hidden;
     z-index: 1;
   }
 
-  .depto-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    animation: fadeInUp 0.8s ease-out backwards;
+  .alquiler-table-excel thead th::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+    z-index: -1;
   }
 
-  .depto-row:nth-child(1) {
-    animation-delay: 0.2s;
+  .alquiler-table-excel tbody tr {
+    transition: all 0.3s ease;
+    animation: fadeIn 0.5s ease backwards;
   }
 
-  .depto-row:nth-child(2) {
-    animation-delay: 0.4s;
+  .alquiler-table-excel tbody tr:nth-child(1) { animation-delay: 0.1s; }
+  .alquiler-table-excel tbody tr:nth-child(2) { animation-delay: 0.15s; }
+  .alquiler-table-excel tbody tr:nth-child(3) { animation-delay: 0.2s; }
+  .alquiler-table-excel tbody tr:nth-child(4) { animation-delay: 0.25s; }
+  .alquiler-table-excel tbody tr:nth-child(5) { animation-delay: 0.3s; }
+  .alquiler-table-excel tbody tr:nth-child(6) { animation-delay: 0.35s; }
+  .alquiler-table-excel tbody tr:nth-child(7) { animation-delay: 0.4s; }
+  .alquiler-table-excel tbody tr:nth-child(8) { animation-delay: 0.45s; }
+  .alquiler-table-excel tbody tr:nth-child(9) { animation-delay: 0.5s; }
+  .alquiler-table-excel tbody tr:nth-child(10) { animation-delay: 0.55s; }
+  .alquiler-table-excel tbody tr:nth-child(11) { animation-delay: 0.6s; }
+  .alquiler-table-excel tbody tr:nth-child(12) { animation-delay: 0.65s; }
+
+  .alquiler-table-excel tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   }
 
-  .depto-row:nth-child(3) {
-    animation-delay: 0.6s;
+  .mes-cell-excel {
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%);
+    color: red !important;
+    font-size: 1.05rem;
+    border: 1px solid #dee2e6;
+    position: relative;
+  }
+  .mes-cell-excel::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(180deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  .depto-row + .depto-row {
-    margin-top: 2rem;
+  .alquiler-table-excel tbody tr:hover .mes-cell-excel::after {
+    opacity: 1;
   }
 
-  @media (max-width: 1024px) {
-    .depto-row {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .depto-info-card {
+  .alquiler-input-excel {
+    text-align: right;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.6rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
     background-color: #ffffff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .alquiler-input-excel:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: scale(1.02);
+    outline: none;
+  }
+
+  .total-cell-excel {
+    text-align: right;
+    font-weight: 600;
+    color: #667eea;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+  }
+
+  .alquiler-table-excel tbody tr:hover .total-cell-excel {
+    color: #764ba2;
+    transform: scale(1.05);
+  }
+
+  .mitad-highlight {
+    background: linear-gradient(135deg, #e7f3ff 0%, #cfe7ff 100%);
+    color: #0066cc !important;
+    font-weight: 700;
     position: relative;
     overflow: hidden;
   }
 
-  .depto-info-card::before {
-    content: '';
+  .mitad-highlight::before {
+    content: '✓';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #0066cc;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  .depto-info-card:hover::before {
-    transform: scaleX(1);
+  .alquiler-table-excel tbody tr:hover .mitad-highlight::before {
+    opacity: 1;
   }
-  
-  .depto-info-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  }
-  
-  .depto-info-label {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #667eea;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: center;
+
+  .total-row-excel {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e0e9ff 100%);
+    font-size: 1.15rem;
     position: relative;
-    display: inline-block;
-    width: 100%;
   }
 
-  .depto-info-label::after {
+  .total-row-excel::before {
     content: '';
     position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 2px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
     background: linear-gradient(90deg, #667eea, #764ba2);
   }
-  
-  .depto-info-value {
-    font-size: 1.3rem;
+
+  .total-row-excel td {
+    padding: 1.2rem 1.5rem;
+    font-weight: 700;
+    border: 1px solid #dee2e6;
     color: #212529;
-    font-weight: 500;
-    text-align: center;
   }
-  
-  .depto-container .btn {
+
+  .total-row-excel .mitad-highlight {
+    background: linear-gradient(135deg, #d0e7ff 0%, #b8d9ff 100%);
+    font-size: 1.2rem;
+  }
+
+  .alquiler-page-container .btn {
     padding: 0.8rem 2.5rem;
     font-size: 1.1rem;
     font-weight: 600;
@@ -493,7 +1247,7 @@
     animation: fadeInUp 1s ease-out 0.8s backwards;
   }
 
-  .depto-container .btn::before {
+  .alquiler-page-container .btn::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -507,1001 +1261,271 @@
     z-index: -1;
   }
 
-  .depto-container .btn:hover::before {
+  .alquiler-page-container .btn:hover::before {
     width: 300px;
     height: 300px;
   }
-  
-  .depto-container .btn:hover {
+
+  .alquiler-page-container .btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
     background-color: #f8f9fa;
   }
 
-  .depto-container .btn:active {
+  .alquiler-page-container .btn:active {
     transform: translateY(-1px);
   }
 
-  /* RENTA STYLES */
-.renta-container {
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .alquiler-page-title {
+      font-size: 1.8rem;
+    }
+
+    .alquiler-table-wrapper {
+      width: 100%;
+    }
+
+    .mes-cell-excel,
+    .total-cell-excel {
+      font-size: 0.9rem;
+      padding: 0.8rem 0.5rem;
+    }
+
+    .alquiler-input-excel {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+    }
+  }
+  /* Control de comisión */
+  .comision-control {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 1s ease-out 0.2s backwards;
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
   }
-  
-  .renta-link {
-    font-size: 1.3rem;
-    color: #667eea;
+
+  .comision-label {
     font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
+    color: #667eea;
+    font-size: 1.1rem;
+    margin: 0;
+    letter-spacing: 0.3px;
+  }
+
+  .comision-input-wrapper {
     position: relative;
-    padding: 0.2rem 0;
-  }
-
-  .renta-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    transition: width 0.3s ease;
-  }
-  
-  .renta-link:hover {
-    color: #764ba2;
-    text-decoration: none;
-  }
-
-  .renta-link:hover::after {
-    width: 100%;
-  }
-  
-  .copy-btn {
-    background-color: transparent;
-    border: 2px solid #667eea;
-    border-radius: 8px;
-    padding: 0.5rem;
-    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    color: #667eea;
-    position: relative;
-    overflow: hidden;
   }
 
-  .copy-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(102, 126, 234, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s, height 0.4s;
-  }
-
-  .copy-btn:hover::before {
+  .comision-input {
     width: 100px;
-    height: 100px;
-  }
-  
-  .copy-btn:hover {
-    background-color: #667eea;
-    color: white;
-    transform: scale(1.15) rotate(5deg);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-  }
-  
-  .copy-btn:active {
-    transform: scale(0.95);
-    animation: pulse 0.4s ease;
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(0.95);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-  }
-  
-  .copy-btn svg {
-    display: block;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* MUNICIPAL STYLES */
-.municipal-card {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .municipal-links {
-    display: flex;
-    gap: 0.8rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .municipal-link-btn {
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
+    padding: 0.6rem 2rem 0.6rem 0.8rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .municipal-link-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.5s, height 0.5s;
-  }
-
-  .municipal-link-btn:hover::before {
-    width: 200px;
-    height: 200px;
-  }
-  
-  .municipal-link-btn:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    color: white;
-  }
-
-  .municipal-link-btn:active {
-    transform: translateY(-1px) scale(1.02);
-  }
-  
-  .municipal-digits {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 0.5rem;
-  }
-  
-  .digit-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.3rem;
-    animation: fadeIn 0.5s ease backwards;
-  }
-
-  .digit-container:nth-child(1) { animation-delay: 0.1s; }
-  .digit-container:nth-child(2) { animation-delay: 0.2s; }
-  .digit-container:nth-child(3) { animation-delay: 0.3s; }
-  .digit-container:nth-child(4) { animation-delay: 0.4s; }
-  .digit-container:nth-child(5) { animation-delay: 0.5s; }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .digit-value {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #212529;
-    padding: 0.4rem 0.8rem;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    min-width: 50px;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .digit-container:hover .digit-value {
-    transform: translateY(-3px) scale(1.1);
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-  }
-  
-  .copy-digit-btn {
-    background-color: transparent;
     border: 2px solid #667eea;
-    border-radius: 6px;
-    padding: 0.3rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 8px;
+    text-align: right;
     transition: all 0.3s ease;
-    color: #667eea;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .copy-digit-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(102, 126, 234, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s, height 0.4s;
-  }
-
-  .copy-digit-btn:hover::before {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .copy-digit-btn:hover {
-    background-color: #667eea;
     color: white;
-    transform: scale(1.2) rotate(10deg);
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-  }
-  
-  .copy-digit-btn:active {
-    transform: scale(0.9);
-    animation: pulse 0.4s ease;
   }
 
-  .copy-digit-btn svg {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* PATENTES STYLES */
-.patentes-card {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .patentes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-  }
-  
-  .patente-item {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    width: 100%;
-    justify-content: center;
-    animation: slideInRight 0.5s ease backwards;
-  }
-
-  .patente-item:nth-child(1) { animation-delay: 0.1s; }
-  .patente-item:nth-child(2) { animation-delay: 0.2s; }
-  .patente-item:nth-child(3) { animation-delay: 0.3s; }
-
-  @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  .patente-link {
-    font-size: 1.3rem;
-    color: #667eea;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    min-width: 120px;
-    text-align: center;
-    position: relative;
-    padding: 0.3rem 0;
-  }
-
-  .patente-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    transition: width 0.3s ease;
-  }
-  
-  .patente-link:hover {
-    color: #764ba2;
-    text-decoration: none;
+  .comision-input:focus {
+    outline: none;
+    border-color: #764ba2;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
     transform: scale(1.05);
   }
 
-  .patente-link:hover::after {
-    width: 100%;
-  }
-  
-  .copy-patente-btn {
-    background-color: transparent;
-    border: 2px solid #667eea;
-    border-radius: 6px;
-    padding: 0.3rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    color: #667eea;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .copy-patente-btn::before {
-    content: '';
+  .comision-symbol {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(102, 126, 234, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s, height 0.4s;
+    right: 10px;
+    font-weight: 700;
+    color: #667eea;
+    font-size: 1.1rem;
+    pointer-events: none;
   }
 
-  .copy-patente-btn:hover::before {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .copy-patente-btn:hover {
-    background-color: #667eea;
-    color: white;
-    transform: scale(1.2) rotate(-5deg);
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-  }
-  
-  .copy-patente-btn:active {
-    transform: scale(0.9);
-    animation: pulse 0.4s ease;
+  .comision-highlight {
+    background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+    color: #ff8c00 !important;
+    font-weight: 700;
   }
 
-  .copy-patente-btn svg {
+  .alquiler-table-excel tbody tr:hover .comision-highlight {
+    color: #ff6b00 !important;
+    transform: scale(1.05);
+  }
+
+  /* Layout para tabla y contrato lado a lado */
+  .alquiler-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    width: 95%;
+    max-width: 1400px;
+    margin-bottom: 2rem;
     position: relative;
     z-index: 1;
+    align-items: flex-start;
   }
 
-  /* Estilos adicionales para el formato especial de farmacia */
-
-.farmacia-digits {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: center;
-  }
-  
-  .digit-separator {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #667eea;
-    margin: 0 0.25rem;
-    animation: bounce 2s infinite;
+  .alquiler-content-wrapper .alquiler-table-wrapper {
+    flex: 1;
+    min-width: 0;
   }
 
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
-  }
-
-  .alquiler-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .alquiler-title {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #333;
-    font-weight: 600;
-  }
-  
-  .alquiler-table {
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .alquiler-table thead {
-    background: #667eea;
-    color: white;
-  }
-  
-  .alquiler-table thead th {
-    padding: 1rem;
-    font-weight: 600;
-  }
-  
-  .mes-cell {
-    font-weight: 500;
-    padding: 0.75rem 1rem;
-    background: #f8f9fa;
-  }
-  
-  .alquiler-input {
-    text-align: right;
-    font-weight: 500;
-  }
-  
-  .total-cell {
-    text-align: right;
-    font-weight: 600;
-    color: #667eea;
-    padding: 0.75rem 1rem;
-  }
-  
-  .total-row {
-    background: #f0f4ff;
-    font-size: 1.1rem;
-  }
-  
-  .total-row td {
-    padding: 1rem;
-    text-align: right;
-  }
-
-  .mitad-cell {
-    background-color: #e7f3ff;
-    font-weight: 600;
-    color: #0066cc;
-  }
-  
-  .total-row .mitad-cell {
-    background-color: #d0e7ff;
-    font-size: 1.1rem;
-  }
-
-/* ALQUILERES PAGE STYLES */
-.alquiler-page-container {
-  min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
-  padding-bottom: 4rem;
-  overflow-x: hidden;
-  position: relative;
-}
-
-/* Efecto de partículas flotantes */
-.alquiler-page-container::before,
-.alquiler-page-container::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  animation: float 20s infinite ease-in-out;
-}
-
-.alquiler-page-container::before {
-  width: 350px;
-  height: 350px;
-  top: 8%;
-  left: 8%;
-  animation-delay: 0s;
-}
-
-.alquiler-page-container::after {
-  width: 280px;
-  height: 280px;
-  bottom: 12%;
-  right: 8%;
-  animation-delay: 6s;
-}
-
-.alquiler-page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
-  margin-top: 2rem;
-  text-align: center;
-  color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  animation: slideDown 0.8s ease-out;
-  position: relative;
-  z-index: 1;
-}
-
-.alquiler-table-wrapper {
-  width: 95%;
-  max-width: 1200px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15);
-  animation: fadeInUp 1s ease-out 0.3s backwards;
-  position: relative;
-  z-index: 1;
-  margin-bottom: 2rem;
-}
-
-.alquiler-table-excel {
-  margin: 0;
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.alquiler-table-excel thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  position: relative;
-}
-
-.alquiler-table-excel thead th {
-  color: black;
-  font-weight: 600;
-  padding: 1.3rem;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-  border: none;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.alquiler-table-excel thead th::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: shimmer 3s infinite;
-  z-index: -1;
-}
-
-.alquiler-table-excel tbody tr {
-  transition: all 0.3s ease;
-  animation: fadeIn 0.5s ease backwards;
-}
-
-.alquiler-table-excel tbody tr:nth-child(1) { animation-delay: 0.1s; }
-.alquiler-table-excel tbody tr:nth-child(2) { animation-delay: 0.15s; }
-.alquiler-table-excel tbody tr:nth-child(3) { animation-delay: 0.2s; }
-.alquiler-table-excel tbody tr:nth-child(4) { animation-delay: 0.25s; }
-.alquiler-table-excel tbody tr:nth-child(5) { animation-delay: 0.3s; }
-.alquiler-table-excel tbody tr:nth-child(6) { animation-delay: 0.35s; }
-.alquiler-table-excel tbody tr:nth-child(7) { animation-delay: 0.4s; }
-.alquiler-table-excel tbody tr:nth-child(8) { animation-delay: 0.45s; }
-.alquiler-table-excel tbody tr:nth-child(9) { animation-delay: 0.5s; }
-.alquiler-table-excel tbody tr:nth-child(10) { animation-delay: 0.55s; }
-.alquiler-table-excel tbody tr:nth-child(11) { animation-delay: 0.6s; }
-.alquiler-table-excel tbody tr:nth-child(12) { animation-delay: 0.65s; }
-
-.alquiler-table-excel tbody tr:hover {
-  transform: scale(1.01);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-.mes-cell-excel {
-  font-weight: 600;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #ff4444 0%, #cc0000 50%) !important;
-  color: #ffffff !important;
-  font-size: 1.05rem;
-  border: 1px solid #dee2e6;
-  position: relative;
-}
-
-.mes-cell-excel::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background: linear-gradient(180deg, #ffffff, #ffcccc);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.alquiler-table-excel tbody tr:hover .mes-cell-excel::after {
-  opacity: 1;
-}
-
-.alquiler-input-excel {
-  text-align: right;
-  font-weight: 500;
-  font-size: 1rem;
-  padding: 0.6rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  background-color: #ffffff;
-}
-
-.alquiler-input-excel:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-  transform: scale(1.02);
-  outline: none;
-}
-
-.total-cell-excel {
-  text-align: right;
-  font-weight: 600;
-  color: #667eea;
-  padding: 1rem 1.5rem;
-  font-size: 1.1rem;
-  border: 1px solid #dee2e6;
-  transition: all 0.3s ease;
-}
-
-.alquiler-table-excel tbody tr:hover .total-cell-excel {
-  color: #764ba2;
-  transform: scale(1.05);
-}
-
-.mitad-highlight {
-  background: linear-gradient(135deg, #e7f3ff 0%, #cfe7ff 100%);
-  color: #0066cc !important;
-  font-weight: 700;
-  position: relative;
-  overflow: hidden;
-}
-
-.mitad-highlight::before {
-  content: '✓';
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  color: #0066cc;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.alquiler-table-excel tbody tr:hover .mitad-highlight::before {
-  opacity: 1;
-}
-
-.total-row-excel {
-  background: linear-gradient(135deg, #f0f4ff 0%, #e0e9ff 100%);
-  font-size: 1.15rem;
-  position: relative;
-}
-
-.total-row-excel::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-}
-
-.total-row-excel td {
-  padding: 1.2rem 1.5rem;
-  font-weight: 700;
-  border: 1px solid #dee2e6;
-  color: #212529;
-}
-
-.total-row-excel .mitad-highlight {
-  background: linear-gradient(135deg, #d0e7ff 0%, #b8d9ff 100%);
-  font-size: 1.2rem;
-}
-
-.alquiler-page-container .btn {
-  padding: 0.8rem 2.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 50px;
-  border: none;
-  background-color: #ffffff;
-  color: #667eea;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  animation: fadeInUp 1s ease-out 0.8s backwards;
-}
-
-.alquiler-page-container .btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(102, 126, 234, 0.1);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-  z-index: -1;
-}
-
-.alquiler-page-container .btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-.alquiler-page-container .btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-  background-color: #f8f9fa;
-}
-
-.alquiler-page-container .btn:active {
-  transform: translateY(-1px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .alquiler-page-title {
-    font-size: 1.8rem;
-  }
-
-  .alquiler-table-wrapper {
-    width: 100%;
-  }
-
-  .mes-cell-excel,
-  .total-cell-excel {
-    font-size: 0.9rem;
-    padding: 0.8rem 0.5rem;
-  }
-
-  .alquiler-input-excel {
-    font-size: 0.9rem;
-    padding: 0.5rem;
-  }
-}
-/* Control de comisión */
-.comision-control {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  background: white;
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 1s ease-out 0.2s backwards;
-  position: relative;
-  z-index: 1;
-  max-width: 500px;
-}
-
-.comision-label {
-  font-weight: 600;
-  color: #667eea;
-  font-size: 1.1rem;
-  margin: 0;
-  letter-spacing: 0.3px;
-}
-
-.comision-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.comision-input {
-  width: 100px;
-  padding: 0.6rem 2rem 0.6rem 0.8rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  text-align: right;
-  transition: all 0.3s ease;
-  color: white;
-}
-
-.comision-input:focus {
-  outline: none;
-  border-color: #764ba2;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-  transform: scale(1.05);
-}
-
-.comision-symbol {
-  position: absolute;
-  right: 10px;
-  font-weight: 700;
-  color: #667eea;
-  font-size: 1.1rem;
-  pointer-events: none;
-}
-
-.comision-highlight {
-  background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
-  color: #ff8c00 !important;
-  font-weight: 700;
-}
-
-.alquiler-table-excel tbody tr:hover .comision-highlight {
-  color: #ff6b00 !important;
-  transform: scale(1.05);
-}
-
-/* Layout para tabla y contrato lado a lado */
-.alquiler-content-wrapper {
-  display: flex;
-  gap: 2rem;
-  width: 95%;
-  max-width: 1400px;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 1;
-  align-items: flex-start;
-}
-
-.alquiler-content-wrapper .alquiler-table-wrapper {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Recuadro de contrato */
-.contrato-box {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  animation: fadeInUp 1s ease-out 0.4s backwards;
-  width: 350px;
-  flex-shrink: 0;
-}
-
-.contrato-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #667eea;
-  margin-bottom: 1rem;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.contrato-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  border-radius: 2px;
-}
-
-.contrato-textarea {
-  width: 100%;
-  min-height: 200px;
-  padding: 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  resize: vertical;
-  transition: all 0.3s ease;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  color: #212529;
-  background-color: #f8f9fa;
-}
-
-.contrato-textarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-  background-color: #ffffff;
-  transform: scale(1.01);
-}
-
-.contrato-textarea::placeholder {
-  color: #adb5bd;
-  font-style: italic;
-}
-
-/* Responsive - en pantallas pequeñas, apilar verticalmente */
-@media (max-width: 1024px) {
-  .alquiler-content-wrapper {
-    flex-direction: column;
-  }
-
+  /* Recuadro de contrato */
   .contrato-box {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: fadeInUp 1s ease-out 0.4s backwards;
+    width: 350px;
+    flex-shrink: 0;
+  }
+
+  .contrato-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
     width: 100%;
   }
-}
 
-/* Estilos para la columna de detalle */
-.detalle-cell {
-  padding: 0.5rem;
-  max-width: 200px;
-  border: 1px solid #dee2e6;
-}
+  .contrato-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+  }
 
-.nota-gasto-btn {
-  width: 100%;
-  padding: 0.6rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 2px dashed #667eea;
-  border-radius: 8px;
-  color: #667eea;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .contrato-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    color: #212529;
+    background-color: #f8f9fa;
+  }
 
-.nota-gasto-btn:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-color: #764ba2;
-  transform: scale(1.02);
-}
+  .contrato-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    background-color: #ffffff;
+    transform: scale(1.01);
+  }
 
-.nota-gasto-input {
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 0.9rem;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
+  .contrato-textarea::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+  }
 
-.nota-gasto-input:focus {
-  outline: none;
-  border-color: #764ba2;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-  transform: scale(1.02);
-}
+  /* Responsive - en pantallas pequeñas, apilar verticalmente */
+  @media (max-width: 1024px) {
+    .alquiler-content-wrapper {
+      flex-direction: column;
+    }
+
+    .contrato-box {
+      width: 100%;
+    }
+  }
+  /* Estilos para la columna de detalle */
+  .detalle-cell {
+    padding: 0.5rem;
+    max-width: 200px;
+    border: 1px solid #dee2e6;
+  }
+
+  .nota-gasto-btn {
+    width: 100%;
+    padding: 0.6rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #667eea;
+    border-radius: 8px;
+    color: #667eea;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nota-gasto-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #764ba2;
+    transform: scale(1.02);
+  }
+
+  .nota-gasto-input {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .nota-gasto-input:focus {
+    outline: none;
+    border-color: #764ba2;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: scale(1.02);
+  }
+
+  /* Estilos para textarea de Campo */
+  .campo-textarea {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.4;
+  }
+
+  .campo-textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: scale(1.01);
+    outline: none;
+  }
+
+  .campo-textarea::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+  }

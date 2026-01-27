@@ -10,6 +10,7 @@ import SeleccionPropietarioAlquiler from './pages/SeleccionPropietarioAlquiler'
 import ListaAlquileres from './pages/ListaAlquileres'
 import DetalleAlquiler from './pages/DetalleAlquiler'
 import TotalMensual from './pages/TotalMensual'
+import Campo from './pages/Campo'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/alquileres/:tipo/:propietario" element={<ListaAlquileres />} />
         <Route path="/alquileres/:tipo/:propietario/:id" element={<DetalleAlquiler />} />
         <Route path="/alquileres/total-mensual" element={<TotalMensual />} />
+        <Route path="/alquileres/campo" element={<Campo />} />
       </Routes>
     </BrowserRouter>
   )

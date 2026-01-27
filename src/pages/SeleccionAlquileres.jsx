@@ -37,6 +37,16 @@ function SeleccionAlquileres() {
           <tr>
             <td>
               <Link
+                to="/alquileres/campo"
+                className="info-link"
+              >
+                CAMPO
+              </Link>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Link
                 to="/alquileres/total-mensual"
                 className="info-link"
               >
