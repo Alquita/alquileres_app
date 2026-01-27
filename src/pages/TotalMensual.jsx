@@ -19,7 +19,15 @@ function TotalMensual() {
     'Diciembre'
   ]
 
-  // Todas las propiedades (departamentos y casas)
+  // Función para formatear números con separador de miles
+  const formatearNumero = (numero) => {
+    return new Intl.NumberFormat('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numero)
+  }
+
+  // Todas las propiedades (departamentos y casas) - SOLO PRINCIPAL, NO COCHERA
   const todasLasPropiedades = [
     // Departamentos Yani
     { tipo: 'departamentos', propietario: 'yani', id: 'puertas-del-sol', nombre: 'Puertas del Sol 2' },
@@ -64,7 +72,8 @@ function TotalMensual() {
     const totales = meses.map((mes, mesIndex) => {
       let totalMes = 0
 
-      // Recorrer todas las propiedades y sumar el total (alquiler - gastos) del mes
+      // Recorrer todas las propiedades y sumar el total del mes
+      // IMPORTANTE: Solo usamos la key principal, no la de cochera
       todasLasPropiedades.forEach(propiedad => {
         const storageKey = `alquiler-${propiedad.tipo}-${propiedad.propietario}-${propiedad.id}`
         const datosGuardados = localStorage.getItem(storageKey)
@@ -74,7 +83,8 @@ function TotalMensual() {
           const datosMes = datos[mesIndex]
           
           if (datosMes) {
-            const totalDepto = (datosMes.alquiler || 0) - (datosMes.gastos || 0)
+            // Total = alquiler - gastos - comisionAdm
+            const totalDepto = (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
             totalMes += totalDepto
           }
         }
@@ -138,13 +148,13 @@ function TotalMensual() {
               <tr key={index}>
                 <td className="mes-cell-excel">{fila.mes}</td>
                 <td className="total-cell-excel">
-                  ${fila.total.toFixed(2)}
+                  ${formatearNumero(fila.total)}
                 </td>
                 <td className="total-cell-excel mitad-highlight">
-                  ${fila.mitad.toFixed(2)}
+                  ${formatearNumero(fila.mitad)}
                 </td>
                 <td className="total-cell-excel comision-highlight">
-                  ${calcularComision(fila.mitad).toFixed(2)}
+                  ${formatearNumero(calcularComision(fila.mitad))}
                 </td>
               </tr>
             ))}
@@ -153,10 +163,10 @@ function TotalMensual() {
             <tr className="total-row-excel">
               <td className="text-end fw-bold">TOTAL ANUAL:</td>
               <td className="fw-bold">
-                ${totalAnual.toFixed(2)}
+                ${formatearNumero(totalAnual)}
               </td>
               <td className="fw-bold mitad-highlight">
-                ${mitadAnual.toFixed(2)}
+                ${formatearNumero(mitadAnual)}
               </td>
               <td></td>
             </tr>

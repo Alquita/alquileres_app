@@ -23,12 +23,25 @@ function DetalleAlquiler() {
     'Diciembre'
   ]
 
-  // Crear una key única para cada propiedad
+  // Función para formatear números con separador de miles
+  const formatearNumero = (numero) => {
+    return new Intl.NumberFormat('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numero)
+  }
+
+  // Detectar si es Puertas del Sol 2
+  const esPuertasDelSol = tipo === 'departamentos' && propietario === 'yani' && id === 'puertas-del-sol'
+
+  // Storage keys
   const storageKey = `alquiler-${tipo}-${propietario}-${id}`
+  const storageKeyCochera = `alquiler-${tipo}-${propietario}-${id}-cochera`
   const contratoKey = `contrato-${tipo}-${propietario}-${id}`
   const notasGastosKey = `notas-gastos-${tipo}-${propietario}-${id}`
+  const notasGastosKeyCochera = `notas-gastos-${tipo}-${propietario}-${id}-cochera`
 
-  // Departamentos que tienen contrato (ahora incluye Mares III y Cielos I)
+  // Departamentos que tienen contrato
   const tieneContrato = () => {
     if (tipo !== 'departamentos') return false
     
@@ -40,7 +53,7 @@ function DetalleAlquiler() {
     return deptosConContrato[propietario]?.includes(id)
   }
 
-  // Cargar datos guardados o inicializar con valores en 0
+  // Estado para datos del depto principal
   const [datos, setDatos] = useState(() => {
     const datosGuardados = localStorage.getItem(storageKey)
     if (datosGuardados) {
@@ -49,17 +62,32 @@ function DetalleAlquiler() {
     return meses.map(mes => ({
       mes,
       alquiler: 0,
-      gastos: 0
+      gastos: 0,
+      comisionAdm: 0
     }))
   })
 
-  // Estado para el contrato
+  // Estado para datos de la cochera
+  const [datosCochera, setDatosCochera] = useState(() => {
+    if (!esPuertasDelSol) return []
+    
+    const datosGuardados = localStorage.getItem(storageKeyCochera)
+    if (datosGuardados) {
+      return JSON.parse(datosGuardados)
+    }
+    return meses.map(mes => ({
+      mes,
+      alquiler: 0,
+      gastos: 0,
+      comisionAdm: 0
+    }))
+  })
+
   const [contrato, setContrato] = useState(() => {
     const contratoGuardado = localStorage.getItem(contratoKey)
     return contratoGuardado || ''
   })
 
-  // Estado para las notas de gastos
   const [notasGastos, setNotasGastos] = useState(() => {
     const notasGuardadas = localStorage.getItem(notasGastosKey)
     if (notasGuardadas) {
@@ -71,30 +99,60 @@ function DetalleAlquiler() {
     }, {})
   })
 
-  // Estado para controlar qué nota está siendo editada
-  const [notaEditando, setNotaEditando] = useState(null)
+  const [notasGastosCochera, setNotasGastosCochera] = useState(() => {
+    if (!esPuertasDelSol) return {}
+    
+    const notasGuardadas = localStorage.getItem(notasGastosKeyCochera)
+    if (notasGuardadas) {
+      return JSON.parse(notasGuardadas)
+    }
+    return meses.reduce((acc, mes) => {
+      acc[mes] = ''
+      return acc
+    }, {})
+  })
 
-  // Guardar datos en localStorage cada vez que cambien
+  const [notaEditando, setNotaEditando] = useState(null)
+  const [notaEditandoCochera, setNotaEditandoCochera] = useState(null)
+
+  // Guardar datos principales
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(datos))
   }, [datos, storageKey])
 
-  // Guardar contrato en localStorage
+  // Guardar datos cochera
+  useEffect(() => {
+    if (esPuertasDelSol) {
+      localStorage.setItem(storageKeyCochera, JSON.stringify(datosCochera))
+    }
+  }, [datosCochera, storageKeyCochera, esPuertasDelSol])
+
   useEffect(() => {
     if (tieneContrato()) {
       localStorage.setItem(contratoKey, contrato)
     }
   }, [contrato, contratoKey])
 
-  // Guardar notas de gastos en localStorage
   useEffect(() => {
     localStorage.setItem(notasGastosKey, JSON.stringify(notasGastos))
   }, [notasGastos, notasGastosKey])
+
+  useEffect(() => {
+    if (esPuertasDelSol) {
+      localStorage.setItem(notasGastosKeyCochera, JSON.stringify(notasGastosCochera))
+    }
+  }, [notasGastosCochera, notasGastosKeyCochera, esPuertasDelSol])
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
     nuevosDatos[index][campo] = parseFloat(valor) || 0
     setDatos(nuevosDatos)
+  }
+
+  const handleInputChangeCochera = (index, campo, valor) => {
+    const nuevosDatos = [...datosCochera]
+    nuevosDatos[index][campo] = parseFloat(valor) || 0
+    setDatosCochera(nuevosDatos)
   }
 
   const handleContratoChange = (e) => {
@@ -108,8 +166,15 @@ function DetalleAlquiler() {
     }))
   }
 
-  const calcularTotal = (alquiler, gastos) => {
-    return alquiler - gastos
+  const handleNotaGastoChangeCochera = (mes, valor) => {
+    setNotasGastosCochera(prev => ({
+      ...prev,
+      [mes]: valor
+    }))
+  }
+
+  const calcularTotal = (alquiler, gastos, comisionAdm) => {
+    return alquiler - (gastos || 0) - (comisionAdm || 0)
   }
 
   const tituloTipo = tipo === 'departamentos' ? 'Departamento' : 'Casa'
@@ -122,85 +187,202 @@ function DetalleAlquiler() {
       </h2>
 
       <div className="alquiler-content-wrapper">
-        <div className="alquiler-table-wrapper">
-          <table className="table table-bordered alquiler-table-excel">
-            <thead>
-              <tr>
-                <th className="text-center">AÑO 2026</th>
-                <th className="text-center">Alquiler</th>
-                <th className="text-center">Gastos</th>
-                <th className="text-center">Detalle</th>
-                <th className="text-center">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {datos.map((fila, index) => (
-                <tr key={index}>
-                  <td className="mes-cell-excel">{fila.mes}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control alquiler-input-excel"
-                      value={fila.alquiler || ''}
-                      onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
-                      placeholder="0"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control alquiler-input-excel"
-                      value={fila.gastos || ''}
-                      onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
-                      placeholder="0"
-                    />
-                  </td>
-                  <td className="detalle-cell">
-                    {notaEditando === fila.mes ? (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {/* Tabla principal */}
+          <div className="alquiler-table-wrapper">
+            <h3 className="subtitulo-tabla">
+              {esPuertasDelSol ? 'Depto 10 F' : 'Año 2026'}
+            </h3>
+            <table className="table table-bordered alquiler-table-excel">
+              <thead>
+                <tr>
+                  <th className="text-center">AÑO 2026</th>
+                  <th className="text-center">Alquiler</th>
+                  <th className="text-center">Exp. Extraordinaria</th>
+                  <th className="text-center">Comisión Adm</th>
+                  <th className="text-center">Detalle</th>
+                  <th className="text-center">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {datos.map((fila, index) => (
+                  <tr key={index}>
+                    <td className="mes-cell-excel">{fila.mes}</td>
+                    <td>
                       <input
-                        type="text"
-                        className="form-control nota-gasto-input"
-                        value={notasGastos[fila.mes] || ''}
-                        onChange={(e) => handleNotaGastoChange(fila.mes, e.target.value)}
-                        onBlur={() => setNotaEditando(null)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') setNotaEditando(null)
-                        }}
-                        autoFocus
-                        placeholder="Escribe aquí..."
+                        type="number"
+                        className="form-control alquiler-input-excel"
+                        value={fila.alquiler || ''}
+                        onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
+                        placeholder="0"
                       />
-                    ) : (
-                      <button
-                        className="nota-gasto-btn"
-                        onClick={() => setNotaEditando(fila.mes)}
-                        title="Click para editar detalle"
-                      >
-                        {notasGastos[fila.mes] || '📝 Agregar detalle'}
-                      </button>
-                    )}
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control alquiler-input-excel"
+                        value={fila.gastos || ''}
+                        onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
+                        placeholder="0"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control alquiler-input-excel"
+                        value={fila.comisionAdm || ''}
+                        onChange={(e) => handleInputChange(index, 'comisionAdm', e.target.value)}
+                        placeholder="0"
+                      />
+                    </td>
+                    <td className="detalle-cell">
+                      {notaEditando === fila.mes ? (
+                        <input
+                          type="text"
+                          className="form-control nota-gasto-input"
+                          value={notasGastos[fila.mes] || ''}
+                          onChange={(e) => handleNotaGastoChange(fila.mes, e.target.value)}
+                          onBlur={() => setNotaEditando(null)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') setNotaEditando(null)
+                          }}
+                          autoFocus
+                          placeholder="Escribe aquí..."
+                        />
+                      ) : (
+                        <button
+                          className="nota-gasto-btn"
+                          onClick={() => setNotaEditando(fila.mes)}
+                          title="Click para editar detalle"
+                        >
+                          {notasGastos[fila.mes] || '📝 Agregar detalle'}
+                        </button>
+                      )}
+                    </td>
+                    <td className="total-cell-excel">
+                      ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="total-row-excel">
+                  <td className="text-end fw-bold">TOTAL ANUAL:</td>
+                  <td className="fw-bold">
+                    ${formatearNumero(datos.reduce((sum, f) => sum + (f.alquiler || 0), 0))}
                   </td>
-                  <td className="total-cell-excel">
-                    ${calcularTotal(fila.alquiler, fila.gastos).toFixed(2)}
+                  <td className="fw-bold">
+                    ${formatearNumero(datos.reduce((sum, f) => sum + (f.gastos || 0), 0))}
+                  </td>
+                  <td className="fw-bold">
+                    ${formatearNumero(datos.reduce((sum, f) => sum + (f.comisionAdm || 0), 0))}
+                  </td>
+                  <td></td>
+                  <td className="fw-bold">
+                    ${formatearNumero(datos.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="total-row-excel">
-                <td className="text-end fw-bold">TOTAL ANUAL:</td>
-                <td className="fw-bold">
-                  ${datos.reduce((sum, f) => sum + f.alquiler, 0).toFixed(2)}
-                </td>
-                <td className="fw-bold">
-                  ${datos.reduce((sum, f) => sum + f.gastos, 0).toFixed(2)}
-                </td>
-                <td></td>
-                <td className="fw-bold">
-                  ${datos.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos), 0).toFixed(2)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+              </tfoot>
+            </table>
+          </div>
+
+          {/* Tabla de cochera solo para Puertas del Sol */}
+          {esPuertasDelSol && (
+            <div className="alquiler-table-wrapper">
+              <h3 className="subtitulo-tabla">Cochera 24</h3>
+              <table className="table table-bordered alquiler-table-excel">
+                <thead>
+                  <tr>
+                    <th className="text-center">AÑO 2026</th>
+                    <th className="text-center">Alquiler</th>
+                    <th className="text-center">Exp. Extraordinaria</th>
+                    <th className="text-center">Comisión Adm</th>
+                    <th className="text-center">Detalle</th>
+                    <th className="text-center">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {datosCochera.map((fila, index) => (
+                    <tr key={index}>
+                      <td className="mes-cell-excel">{fila.mes}</td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.alquiler || ''}
+                          onChange={(e) => handleInputChangeCochera(index, 'alquiler', e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.gastos || ''}
+                          onChange={(e) => handleInputChangeCochera(index, 'gastos', e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control alquiler-input-excel"
+                          value={fila.comisionAdm || ''}
+                          onChange={(e) => handleInputChangeCochera(index, 'comisionAdm', e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                      <td className="detalle-cell">
+                        {notaEditandoCochera === fila.mes ? (
+                          <input
+                            type="text"
+                            className="form-control nota-gasto-input"
+                            value={notasGastosCochera[fila.mes] || ''}
+                            onChange={(e) => handleNotaGastoChangeCochera(fila.mes, e.target.value)}
+                            onBlur={() => setNotaEditandoCochera(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') setNotaEditandoCochera(null)
+                            }}
+                            autoFocus
+                            placeholder="Escribe aquí..."
+                          />
+                        ) : (
+                          <button
+                            className="nota-gasto-btn"
+                            onClick={() => setNotaEditandoCochera(fila.mes)}
+                            title="Click para editar detalle"
+                          >
+                            {notasGastosCochera[fila.mes] || '📝 Agregar detalle'}
+                          </button>
+                        )}
+                      </td>
+                      <td className="total-cell-excel">
+                        ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="total-row-excel">
+                    <td className="text-end fw-bold">TOTAL ANUAL:</td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + (f.alquiler || 0), 0))}
+                    </td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + (f.gastos || 0), 0))}
+                    </td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + (f.comisionAdm || 0), 0))}
+                    </td>
+                    <td></td>
+                    <td className="fw-bold">
+                      ${formatearNumero(datosCochera.reduce((sum, f) => sum + calcularTotal(f.alquiler, f.gastos, f.comisionAdm), 0))}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
         </div>
 
         {tieneContrato() && (
