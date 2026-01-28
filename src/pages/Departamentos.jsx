@@ -66,7 +66,7 @@ function Departamentos() {
       rentas: '240543828905', 
       rentas2: '240543827941',
       municipal: ['1', '2', '188', '100', '120'],
-      municipal2: ['1', '1', '188', '100', '24']
+      municipal2: ['1', '2', '188', '100', '24']
     },
     { 
       id: 'robles-viii', 
