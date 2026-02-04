@@ -1666,3 +1666,40 @@
   padding-left: 24px !important;
   text-align: left !important;
 }
+
+/* Agregar al final de tu archivo style.css existente */
+
+/* Color para la columna Transferir */
+.transferir-highlight {
+  background: linear-gradient(135deg, #e6fff2 0%, #ccffe6 100%);
+  color: #00b359 !important;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+}
+
+.transferir-highlight::before {
+  content: '→';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #00b359;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.alquiler-table-excel tbody tr:hover .transferir-highlight::before {
+  opacity: 1;
+}
+
+.alquiler-table-excel tbody tr:hover .transferir-highlight {
+  color: #008f47 !important;
+  transform: scale(1.05);
+}
+
+.total-row-excel .transferir-highlight {
+  background: linear-gradient(135deg, #ccffe6 0%, #b3ffd9 100%);
+  font-size: 1.2rem;
+}

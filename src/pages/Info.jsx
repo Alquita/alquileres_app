@@ -130,7 +130,30 @@ function Info() {
     }
   ]
 
-  const maxLength = Math.max(propiedadesYani.length, propiedadesFabian.length, propiedadesCompartidas.length)
+  const propiedadesVendidas = [
+    {
+      id: 'terreno-papa',
+      nombre: 'TERRENO PAPA',
+      rentas: '240619385561'
+    },
+    {
+      id: 'jardin-1',
+      nombre: 'JARDIN 1',
+      rentas: '240621578856'
+    },
+    {
+      id: 'jardin-2',
+      nombre: 'JARDIN 2',
+      rentas: '240621579003'
+    }
+  ]
+
+  const maxLength = Math.max(
+    propiedadesYani.length, 
+    propiedadesFabian.length, 
+    propiedadesCompartidas.length,
+    propiedadesVendidas.length
+  )
 
   return (
     <div className="info-container">
@@ -142,6 +165,7 @@ function Info() {
             <th>Yani</th>
             <th>Yani y Fabián</th>
             <th>Fabián</th>
+            <th>Vendidos</th>
           </tr>
         </thead>
         <tbody>
@@ -177,6 +201,17 @@ function Info() {
                     className="info-link"
                   >
                     {propiedadesFabian[index].nombre}
+                  </Link>
+                ) : null}
+              </td>
+              <td>
+                {propiedadesVendidas[index] ? (
+                  <Link
+                    to={`/info/vendido/${propiedadesVendidas[index].id}`}
+                    state={propiedadesVendidas[index]}
+                    className="info-link"
+                  >
+                    {propiedadesVendidas[index].nombre}
                   </Link>
                 ) : null}
               </td>

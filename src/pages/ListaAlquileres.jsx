@@ -9,8 +9,7 @@ function ListaAlquileres() {
     { id: 'puertas-del-sol', nombre: 'PUERTAS DEL SOL 2' },
     { id: 'robles-viii', nombre: 'ROBLES VIII' },
     { id: 'mares-iii', nombre: 'MARES III' },
-    { id: 'cielos-i', nombre: 'CIELOS I' },
-    { id: 'robles-xiv', nombre: 'ROBLES XIV' }
+    { id: 'cielos-i', nombre: 'CIELOS I' }
   ]
 
   // Departamentos de Fabián

@@ -58,6 +58,13 @@ function TotalMensual() {
   const tablasSecundarias = [
     {
       tipo: 'departamentos',
+      propietario: 'yani',
+      id: 'puertas-del-sol',
+      sufijo: 'cochera',
+      nombre: 'Cochera 24 (Puertas del Sol)'
+    },
+    {
+      tipo: 'departamentos',
       propietario: 'fabian',
       id: 'robles-xiv-fabian',
       sufijo: 'depto3c',
@@ -133,8 +140,15 @@ function TotalMensual() {
     return (mitad * porcentajeComision) / 100
   }
 
+  const calcularTransferir = (mitad) => {
+    const comision = calcularComision(mitad)
+    return mitad - comision
+  }
+
   const totalAnual = totalesMensuales.reduce((sum, m) => sum + m.total, 0)
   const mitadAnual = totalesMensuales.reduce((sum, m) => sum + m.mitad, 0)
+  const comisionAnual = totalesMensuales.reduce((sum, m) => sum + calcularComision(m.mitad), 0)
+  const transferirAnual = totalesMensuales.reduce((sum, m) => sum + calcularTransferir(m.mitad), 0)
 
   return (
     <div className="alquiler-page-container">
@@ -168,6 +182,7 @@ function TotalMensual() {
               <th className="text-center">Total</th>
               <th className="text-center">Mitad (÷2)</th>
               <th className="text-center">Comisión</th>
+              <th className="text-center">Transferir</th>
             </tr>
           </thead>
           <tbody>
@@ -183,6 +198,9 @@ function TotalMensual() {
                 <td className="total-cell-excel comision-highlight">
                   ${formatearNumero(calcularComision(fila.mitad))}
                 </td>
+                <td className="total-cell-excel transferir-highlight">
+                  ${formatearNumero(calcularTransferir(fila.mitad))}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -195,7 +213,6 @@ function TotalMensual() {
               <td className="fw-bold mitad-highlight">
                 ${formatearNumero(mitadAnual)}
               </td>
-              <td></td>
             </tr>
           </tfoot>
         </table>
