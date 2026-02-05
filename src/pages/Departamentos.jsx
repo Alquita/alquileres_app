@@ -138,8 +138,8 @@ function Departamentos() {
       nombre: 'ROBLES XIV', 
       direccion: 'Bs As 645 - Depto 4 C',
       direccion2: 'Bs As 645 - Depto 3 C', 
-      rentas: '240527453441',
-      rentas2: '240527453471',
+      rentas: '240527453471',
+      rentas2: '240527453411',
       municipal: ['1', '1', '69', '5', '43'],
       municipal2: ['1', '1', '69', '5', '37'],
       esSegundoDepto: true
