@@ -130,7 +130,7 @@ function Departamentos() {
       id: 'egea-5', 
       nombre: 'EGEA 5', 
       direccion: 'Pringles 96 - Depto', 
-      rentas: '240525867457',
+      rentas: '240525667457',
       municipal: ['1', '2', '205', '7', '13']
     },
     { 
