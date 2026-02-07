@@ -34,7 +34,7 @@ function Info() {
     { 
       id: 'autos', 
       nombre: 'AUTOS',
-      patentes: ['OZP 523', 'AB 985 HB', 'AH 049 WB']
+      patentes: ['OZP 523', 'AB 985 HB', 'AH 041 WB']
     },
     { 
       id: 'fua', 
