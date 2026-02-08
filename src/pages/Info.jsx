@@ -33,8 +33,8 @@ function Info() {
     },
     { 
       id: 'autos', 
-      nombre: 'AUTOS',
-      patentes: ['OZP 523', 'AB 985 HB', 'AH 041 WB']
+      nombre: 'AUTOS Y MOTO',
+      patentes: ['OZP 523', 'AB 985 HB', 'AH 041 WB', 'A062ZEI']
     },
     { 
       id: 'fua', 
