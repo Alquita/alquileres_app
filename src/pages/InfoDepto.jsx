@@ -626,5 +626,5 @@ function InfoDepto() {
     </div>
   )
 }
-
+// export
 export default InfoDepto
