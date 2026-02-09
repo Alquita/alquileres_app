@@ -40,7 +40,8 @@ function Info() {
       id: 'fua', 
       nombre: 'FARMACIA', 
       direccion: 'Comercio e Industria - NUM RIO IV',
-      municipal: ['S-2890']
+      municipal: ['S-2890'],
+      telefonoFijo: '3584628212'
     },
     { 
       id: 'campo', 

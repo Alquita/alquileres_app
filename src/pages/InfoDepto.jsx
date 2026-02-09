@@ -210,7 +210,7 @@ function InfoDepto() {
           // Determinar el link según la patente
           const isMoto = patente === 'A062ZEI'
           const linkUrl = isMoto 
-            ? 'https://economiariocuarto.gob.ar/pagos-y-deudas'
+            ? 'https://app.riocuarto.gov.ar:8443/gestiontributaria/servlet/com.recursos.hceduimpmul?Pate'
             : 'https://www.rentascordoba.gob.ar/emision/ver-y-pagar/automotor'
           
           return (
@@ -449,6 +449,48 @@ function InfoDepto() {
     )
   }
 
+  const TelefonoFijoCard = ({ numero, label }) => {
+    const [copiedTelefono, setCopiedTelefono] = useState(null)
+
+    const copyTelefono = (num) => {
+      navigator.clipboard.writeText(num)
+      setCopiedTelefono('telefono')
+      setTimeout(() => setCopiedTelefono(null), 2000)
+    }
+
+    return (
+      <div className="depto-info-card">
+        <h3 className="depto-info-label">{label}</h3>
+        <div className="renta-container">
+          <a 
+            href="https://www.personal.com.ar/pagos/payment/service/phone"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="renta-link"
+          >
+            {numero}
+          </a>
+          <button 
+            className="copy-btn"
+            onClick={() => copyTelefono(numero)}
+            title="Copiar número"
+          >
+            {copiedTelefono === 'telefono' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="depto-container">
       <h2 className="depto-title">
@@ -513,6 +555,13 @@ function InfoDepto() {
             <ComunaAguaCard 
               numero={depto.comunaAgua}
               label="Comuna Agua y Tasa"
+            />
+          )}
+
+          {depto?.telefonoFijo && (
+            <TelefonoFijoCard 
+              numero={depto.telefonoFijo}
+              label="Teléfono Fijo"
             />
           )}
         </div>
