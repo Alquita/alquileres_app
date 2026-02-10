@@ -73,8 +73,15 @@ function TotalMensual() {
   ]
 
   const [totalesMensuales, setTotalesMensuales] = useState([])
-  const [porcentajeComision, setPorcentajeComision] = useState(() => {
-    const guardado = localStorage.getItem('porcentaje-comision')
+  
+  // Dos porcentajes: uno para enero-junio, otro para julio-diciembre
+  const [porcentajePrimerSemestre, setPorcentajePrimerSemestre] = useState(() => {
+    const guardado = localStorage.getItem('porcentaje-comision-primer-semestre')
+    return guardado ? parseFloat(guardado) : 0
+  })
+  
+  const [porcentajeSegundoSemestre, setPorcentajeSegundoSemestre] = useState(() => {
+    const guardado = localStorage.getItem('porcentaje-comision-segundo-semestre')
     return guardado ? parseFloat(guardado) : 0
   })
 
@@ -83,8 +90,12 @@ function TotalMensual() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('porcentaje-comision', porcentajeComision.toString())
-  }, [porcentajeComision])
+    localStorage.setItem('porcentaje-comision-primer-semestre', porcentajePrimerSemestre.toString())
+  }, [porcentajePrimerSemestre])
+
+  useEffect(() => {
+    localStorage.setItem('porcentaje-comision-segundo-semestre', porcentajeSegundoSemestre.toString())
+  }, [porcentajeSegundoSemestre])
 
   const calcularTotales = () => {
     const totales = meses.map((mes, mesIndex) => {
@@ -136,41 +147,71 @@ function TotalMensual() {
     setTotalesMensuales(totales)
   }
 
-  const calcularComision = (mitad) => {
-    return (mitad * porcentajeComision) / 100
+  // Función que determina qué porcentaje usar según el mes
+  const getPorcentajeComision = (mesIndex) => {
+    // Enero (0) a Junio (5) = primer semestre
+    // Julio (6) a Diciembre (11) = segundo semestre
+    return mesIndex <= 5 ? porcentajePrimerSemestre : porcentajeSegundoSemestre
   }
 
-  const calcularTransferir = (mitad) => {
-    const comision = calcularComision(mitad)
+  const calcularComision = (mitad, mesIndex) => {
+    const porcentaje = getPorcentajeComision(mesIndex)
+    return (mitad * porcentaje) / 100
+  }
+
+  const calcularTransferir = (mitad, mesIndex) => {
+    const comision = calcularComision(mitad, mesIndex)
     return mitad - comision
   }
 
   const totalAnual = totalesMensuales.reduce((sum, m) => sum + m.total, 0)
   const mitadAnual = totalesMensuales.reduce((sum, m) => sum + m.mitad, 0)
-  const comisionAnual = totalesMensuales.reduce((sum, m) => sum + calcularComision(m.mitad), 0)
-  const transferirAnual = totalesMensuales.reduce((sum, m) => sum + calcularTransferir(m.mitad), 0)
+  const comisionAnual = totalesMensuales.reduce((sum, m, index) => sum + calcularComision(m.mitad, index), 0)
+  const transferirAnual = totalesMensuales.reduce((sum, m, index) => sum + calcularTransferir(m.mitad, index), 0)
 
   return (
     <div className="alquiler-page-container">
       <h2 className="alquiler-page-title">Total Mensual - Todos los Alquileres</h2>
 
-      <div className="comision-control">
-        <label htmlFor="porcentaje-comision" className="comision-label">
-          Porcentaje de Comisión:
-        </label>
-        <div className="comision-input-wrapper">
-          <input
-            id="porcentaje-comision"
-            type="number"
-            className="comision-input"
-            value={porcentajeComision || ''}
-            onChange={(e) => setPorcentajeComision(parseFloat(e.target.value) || 0)}
-            placeholder="0"
-            min="0"
-            max="100"
-            step="0.1"
-          />
-          <span className="comision-symbol">%</span>
+      <div className="comision-semestres-container">
+        <div className="comision-control">
+          <label htmlFor="porcentaje-primer-semestre" className="comision-label">
+            Comisión Enero - Junio:
+          </label>
+          <div className="comision-input-wrapper">
+            <input
+              id="porcentaje-primer-semestre"
+              type="number"
+              className="comision-input"
+              value={porcentajePrimerSemestre || ''}
+              onChange={(e) => setPorcentajePrimerSemestre(parseFloat(e.target.value) || 0)}
+              placeholder="0"
+              min="0"
+              max="100"
+              step="0.1"
+            />
+            <span className="comision-symbol">%</span>
+          </div>
+        </div>
+
+        <div className="comision-control">
+          <label htmlFor="porcentaje-segundo-semestre" className="comision-label">
+            Comisión Julio - Diciembre:
+          </label>
+          <div className="comision-input-wrapper">
+            <input
+              id="porcentaje-segundo-semestre"
+              type="number"
+              className="comision-input"
+              value={porcentajeSegundoSemestre || ''}
+              onChange={(e) => setPorcentajeSegundoSemestre(parseFloat(e.target.value) || 0)}
+              placeholder="0"
+              min="0"
+              max="100"
+              step="0.1"
+            />
+            <span className="comision-symbol">%</span>
+          </div>
         </div>
       </div>
 
@@ -196,10 +237,10 @@ function TotalMensual() {
                   ${formatearNumero(fila.mitad)}
                 </td>
                 <td className="total-cell-excel comision-highlight">
-                  ${formatearNumero(calcularComision(fila.mitad))}
+                  ${formatearNumero(calcularComision(fila.mitad, index))}
                 </td>
                 <td className="total-cell-excel transferir-highlight">
-                  ${formatearNumero(calcularTransferir(fila.mitad))}
+                  ${formatearNumero(calcularTransferir(fila.mitad, index))}
                 </td>
               </tr>
             ))}
@@ -209,9 +250,6 @@ function TotalMensual() {
               <td className="text-end fw-bold">TOTAL ANUAL:</td>
               <td className="fw-bold">
                 ${formatearNumero(totalAnual)}
-              </td>
-              <td className="fw-bold mitad-highlight">
-                ${formatearNumero(mitadAnual)}
               </td>
             </tr>
           </tfoot>

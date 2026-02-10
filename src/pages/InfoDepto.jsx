@@ -11,6 +11,9 @@ function InfoDepto() {
   const [copiedMunicipal, setCopiedMunicipal] = useState(null)
   const [copiedPatente, setCopiedPatente] = useState(null)
 
+  // Detectar si es farmacia
+  const esFarmacia = id === 'fua'
+
   // Detectar de qué página viene para saber a dónde volver
   const vieneDeInfo = location.pathname.includes('/info/')
   const vieneDeDepto = location.pathname.includes('/depto/')
@@ -497,9 +500,9 @@ function InfoDepto() {
         {persona.toUpperCase()} – {depto?.nombre || 'Departamento'}
       </h2>
 
-      <div className="depto-info-grid">
-        {/* Primera fila */}
-        <div className="depto-row">
+      {/* Layout especial para farmacia: grid 2x2 */}
+      {esFarmacia ? (
+        <div className="farmacia-grid">
           {depto?.direccion && (
             <div className="depto-info-card">
               <h3 className="depto-info-label">Dirección</h3>
@@ -507,26 +510,11 @@ function InfoDepto() {
             </div>
           )}
 
-          {depto?.rentas && (
-            <RentaCard 
-              renta={depto.rentas} 
-              label="Número de Renta" 
-              rentaNum={1}
-            />
-          )}
-
           {depto?.municipal && (
             <MunicipalCard 
               municipal={depto.municipal}
               label="Municipal"
               municipalNum="1"
-            />
-          )}
-
-          {depto?.patentes && (
-            <PatentesCard 
-              patentes={depto.patentes}
-              label="Patentes"
             />
           )}
 
@@ -544,20 +532,6 @@ function InfoDepto() {
             />
           )}
 
-          {depto?.cooperativaLuz && (
-            <CooperativaLuzCard 
-              numero={depto.cooperativaLuz}
-              label="Cooperativa de Luz"
-            />
-          )}
-
-          {depto?.comunaAgua && (
-            <ComunaAguaCard 
-              numero={depto.comunaAgua}
-              label="Comuna Agua y Tasa"
-            />
-          )}
-
           {depto?.telefonoFijo && (
             <TelefonoFijoCard 
               numero={depto.telefonoFijo}
@@ -565,57 +539,128 @@ function InfoDepto() {
             />
           )}
         </div>
-
-        {/* Segunda fila */}
-        {(depto?.direccion2 || depto?.rentas2 || depto?.municipal2) && (
+      ) : (
+        /* Layout normal para el resto */
+        <div className="depto-info-grid">
+          {/* Primera fila */}
           <div className="depto-row">
-            {depto?.direccion2 && (
+            {depto?.direccion && (
               <div className="depto-info-card">
-                <h3 className="depto-info-label">
-                  {depto?.direccion3 ? 'Dirección 2' : (depto?.esSegundoDepto ? 'Dirección 2' : 'Dirección Cochera')}
-                </h3>
-                <p className="depto-info-value">{depto.direccion2}</p>
+                <h3 className="depto-info-label">Dirección</h3>
+                <p className="depto-info-value">{depto.direccion}</p>
               </div>
             )}
-            
-            {depto?.rentas2 && (
+
+            {depto?.rentas && (
               <RentaCard 
-                renta={depto.rentas2} 
-                label={depto?.rentas3 ? 'Número de Renta 2' : (depto?.esSegundoDepto ? 'Número de Renta 2' : 'Número de Renta Cochera')}
-                rentaNum={2}
+                renta={depto.rentas} 
+                label="Número de Renta" 
+                rentaNum={1}
               />
             )}
 
-            {depto?.municipal2 && (
+            {depto?.municipal && (
               <MunicipalCard 
-                municipal={depto.municipal2}
-                label={depto?.municipal3 ? 'Municipal 2' : (depto?.esSegundoDepto ? 'Municipal 2' : 'Municipal Cochera')}
-                municipalNum="2"
+                municipal={depto.municipal}
+                label="Municipal"
+                municipalNum="1"
               />
             )}
-          </div>
-        )}
 
-        {/* Tercera fila (para Campo) */}
-        {(depto?.direccion3 || depto?.rentas3) && (
-          <div className="depto-row">
-            {depto?.direccion3 && (
-              <div className="depto-info-card">
-                <h3 className="depto-info-label">Dirección 3</h3>
-                <p className="depto-info-value">{depto.direccion3}</p>
-              </div>
+            {depto?.patentes && (
+              <PatentesCard 
+                patentes={depto.patentes}
+                label="Patentes"
+              />
             )}
-            
-            {depto?.rentas3 && (
-              <RentaCard 
-                renta={depto.rentas3} 
-                label="Número de Renta 3"
-                rentaNum={3}
+
+            {depto?.ecogas && (
+              <EcogasCard 
+                ecogas={depto.ecogas}
+                label="Ecogas"
+              />
+            )}
+
+            {depto?.epec && (
+              <EpecCard 
+                epec={depto.epec}
+                label="EPEC"
+              />
+            )}
+
+            {depto?.cooperativaLuz && (
+              <CooperativaLuzCard 
+                numero={depto.cooperativaLuz}
+                label="Cooperativa de Luz"
+              />
+            )}
+
+            {depto?.comunaAgua && (
+              <ComunaAguaCard 
+                numero={depto.comunaAgua}
+                label="Comuna Agua y Tasa"
+              />
+            )}
+
+            {depto?.telefonoFijo && (
+              <TelefonoFijoCard 
+                numero={depto.telefonoFijo}
+                label="Teléfono Fijo"
               />
             )}
           </div>
-        )}
-      </div>
+
+          {/* Segunda fila */}
+          {(depto?.direccion2 || depto?.rentas2 || depto?.municipal2) && (
+            <div className="depto-row">
+              {depto?.direccion2 && (
+                <div className="depto-info-card">
+                  <h3 className="depto-info-label">
+                    {depto?.direccion3 ? 'Dirección 2' : (depto?.esSegundoDepto ? 'Dirección 2' : 'Dirección Cochera')}
+                  </h3>
+                  <p className="depto-info-value">{depto.direccion2}</p>
+                </div>
+              )}
+              
+              {depto?.rentas2 && (
+                <RentaCard 
+                  renta={depto.rentas2} 
+                  label={depto?.rentas3 ? 'Número de Renta 2' : (depto?.esSegundoDepto ? 'Número de Renta 2' : 'Número de Renta Cochera')}
+                  rentaNum={2}
+                />
+              )}
+
+              {depto?.municipal2 && (
+                <MunicipalCard 
+                  municipal={depto.municipal2}
+                  label={depto?.municipal3 ? 'Municipal 2' : (depto?.esSegundoDepto ? 'Municipal 2' : 'Municipal Cochera')}
+                  municipalNum="2"
+                />
+              )}
+            </div>
+          )}
+
+          {/* Tercera fila (para Campo) */}
+          {(depto?.direccion3 || depto?.rentas3) && (
+            <div className="depto-row">
+              {depto?.direccion3 && (
+                <div className="depto-info-card">
+                  <h3 className="depto-info-label">Dirección 3</h3>
+                  <p className="depto-info-value">{depto.direccion3}</p>
+                </div>
+              )}
+              
+              {depto?.rentas3 && (
+                <RentaCard 
+                  renta={depto.rentas3} 
+                  label="Número de Renta 3"
+                  rentaNum={3}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       <button
         className="btn btn-secondary mt-4"
@@ -626,5 +671,5 @@ function InfoDepto() {
     </div>
   )
 }
-// export 2
+
 export default InfoDepto

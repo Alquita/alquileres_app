@@ -10,9 +10,7 @@ function Info() {
       nombre: 'LOCAL', 
       direccion: 'Buenos Aires 660', 
       rentas: '240522467384',
-      municipal: ['1', '1', '58', '24', '1'],
-      ecogas: '21249909',
-      epec: '01520789 - 0024517105'
+      municipal: ['1', '1', '58', '24', '1']
     },
     { 
       id: 'casa', 
@@ -39,9 +37,11 @@ function Info() {
     { 
       id: 'fua', 
       nombre: 'FARMACIA', 
-      direccion: 'Comercio e Industria - NUM RIO IV',
+      direccion: 'Buenos Aires 660',
+      telefonoFijo: '3584628212',
       municipal: ['S-2890'],
-      telefonoFijo: '3584628212'
+      ecogas: '21249909',
+      epec: '01520789 - 0024517105'
     },
     { 
       id: 'campo', 
