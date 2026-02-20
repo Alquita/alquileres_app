@@ -30,8 +30,10 @@ function Campo() {
     return meses.map(mes => ({
       mes,
       promedio: '',
+      saldo: '',
       recibi: '',
-      diferencia: ''
+      diferencia: '',
+      aclaracion: ''
     }))
   })
 
@@ -56,8 +58,10 @@ function Campo() {
             <tr>
               <th className="text-center">AÑO 2026</th>
               <th className="text-center">Promedio</th>
+              <th className="text-center">Saldo</th>
               <th className="text-center">Recibí</th>
               <th className="text-center">Diferencia</th>
+              <th className="text-center">Aclaración</th>
             </tr>
           </thead>
           <tbody>
@@ -76,6 +80,15 @@ function Campo() {
                 <td>
                   <textarea
                     className="form-control campo-textarea"
+                    value={fila.saldo}
+                    onChange={(e) => handleInputChange(index, 'saldo', e.target.value)}
+                    placeholder="Escribe aquí..."
+                    rows="2"
+                  />
+                </td>
+                <td>
+                  <textarea
+                    className="form-control campo-textarea"
                     value={fila.recibi}
                     onChange={(e) => handleInputChange(index, 'recibi', e.target.value)}
                     placeholder="Escribe aquí..."
@@ -87,6 +100,15 @@ function Campo() {
                     className="form-control campo-textarea"
                     value={fila.diferencia}
                     onChange={(e) => handleInputChange(index, 'diferencia', e.target.value)}
+                    placeholder="Escribe aquí..."
+                    rows="2"
+                  />
+                </td>
+                <td>
+                  <textarea
+                    className="form-control campo-textarea"
+                    value={fila.aclaracion}
+                    onChange={(e) => handleInputChange(index, 'aclaracion', e.target.value)}
                     placeholder="Escribe aquí..."
                     rows="2"
                   />
