@@ -63,6 +63,36 @@ function DetalleAlquiler() {
     return deptosConContrato[propietario]?.includes(id)
   }
 
+  // ── Estado modal ──────────────────────────────────────────────────────────
+  const [modal, setModal] = useState(null) // { tabla: 'principal'|'cochera'|'depto3c', mes: string }
+  const [modalTexto, setModalTexto] = useState('')
+
+  const abrirModal = (tabla, mes, textoActual) => {
+    setModalTexto(textoActual || '')
+    setModal({ tabla, mes })
+  }
+
+  const cerrarModal = (guardar) => {
+    if (guardar && modal) {
+      if (modal.tabla === 'principal') {
+        setNotasGastos(prev => ({ ...prev, [modal.mes]: modalTexto }))
+      } else if (modal.tabla === 'cochera') {
+        setNotasGastosCochera(prev => ({ ...prev, [modal.mes]: modalTexto }))
+      } else if (modal.tabla === 'depto3c') {
+        setNotasGastosDepto3C(prev => ({ ...prev, [modal.mes]: modalTexto }))
+      }
+    }
+    setModal(null)
+    setModalTexto('')
+  }
+
+  // Cerrar modal con Escape
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === 'Escape') cerrarModal(false) }
+    if (modal) window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [modal])
+
   // Estado para datos del depto principal
   const [datos, setDatos] = useState(() => {
     const datosGuardados = localStorage.getItem(storageKey)
@@ -347,28 +377,16 @@ function DetalleAlquiler() {
                           </div>
                         </td>
                         <td className="detalle-cell">
-                          {notaEditando === fila.mes ? (
-                            <input
-                              type="text"
-                              className="form-control nota-gasto-input"
-                              value={notasGastos[fila.mes] || ''}
-                              onChange={(e) => handleNotaGastoChange(fila.mes, e.target.value)}
-                              onBlur={() => setNotaEditando(null)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') setNotaEditando(null)
-                              }}
-                              autoFocus
-                              placeholder="Escribe aquí..."
-                            />
-                          ) : (
-                            <button
-                              className="nota-gasto-btn"
-                              onClick={() => setNotaEditando(fila.mes)}
-                              title="Click para editar detalle"
-                            >
-                              {notasGastos[fila.mes] || '📝 Agregar detalle'}
-                            </button>
-                          )}
+                          <button
+                            className={`nota-gasto-btn${notasGastos[fila.mes] ? ' nota-gasto-btn--con-texto' : ''}`}
+                            onClick={() => abrirModal('principal', fila.mes, notasGastos[fila.mes])}
+                            title="Click para ver/editar detalle"
+                          >
+                            {notasGastos[fila.mes]
+                              ? <span className="nota-preview">{notasGastos[fila.mes]}</span>
+                              : '📝 Agregar detalle'
+                            }
+                          </button>
                         </td>
                         <td className="total-cell-excel">
                           ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
@@ -447,28 +465,16 @@ function DetalleAlquiler() {
                       </div>
                     </td>
                     <td className="detalle-cell">
-                      {notaEditando === fila.mes ? (
-                        <input
-                          type="text"
-                          className="form-control nota-gasto-input"
-                          value={notasGastos[fila.mes] || ''}
-                          onChange={(e) => handleNotaGastoChange(fila.mes, e.target.value)}
-                          onBlur={() => setNotaEditando(null)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') setNotaEditando(null)
-                          }}
-                          autoFocus
-                          placeholder="Escribe aquí..."
-                        />
-                      ) : (
-                        <button
-                          className="nota-gasto-btn"
-                          onClick={() => setNotaEditando(fila.mes)}
-                          title="Click para editar detalle"
-                        >
-                          {notasGastos[fila.mes] || '📝 Agregar detalle'}
-                        </button>
-                      )}
+                      <button
+                        className={`nota-gasto-btn${notasGastos[fila.mes] ? ' nota-gasto-btn--con-texto' : ''}`}
+                        onClick={() => abrirModal('principal', fila.mes, notasGastos[fila.mes])}
+                        title="Click para ver/editar detalle"
+                      >
+                        {notasGastos[fila.mes]
+                          ? <span className="nota-preview">{notasGastos[fila.mes]}</span>
+                          : '📝 Agregar detalle'
+                        }
+                      </button>
                     </td>
                     <td className="total-cell-excel">
                       ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
@@ -538,28 +544,16 @@ function DetalleAlquiler() {
                           </div>
                         </td>
                         <td className="detalle-cell">
-                          {notaEditandoCochera === fila.mes ? (
-                            <input
-                              type="text"
-                              className="form-control nota-gasto-input"
-                              value={notasGastosCochera[fila.mes] || ''}
-                              onChange={(e) => handleNotaGastoChangeCochera(fila.mes, e.target.value)}
-                              onBlur={() => setNotaEditandoCochera(null)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') setNotaEditandoCochera(null)
-                              }}
-                              autoFocus
-                              placeholder="Escribe aquí..."
-                            />
-                          ) : (
-                            <button
-                              className="nota-gasto-btn"
-                              onClick={() => setNotaEditandoCochera(fila.mes)}
-                              title="Click para editar detalle"
-                            >
-                              {notasGastosCochera[fila.mes] || '📝 Agregar detalle'}
-                            </button>
-                          )}
+                          <button
+                            className={`nota-gasto-btn${notasGastosCochera[fila.mes] ? ' nota-gasto-btn--con-texto' : ''}`}
+                            onClick={() => abrirModal('cochera', fila.mes, notasGastosCochera[fila.mes])}
+                            title="Click para ver/editar detalle"
+                          >
+                            {notasGastosCochera[fila.mes]
+                              ? <span className="nota-preview">{notasGastosCochera[fila.mes]}</span>
+                              : '📝 Agregar detalle'
+                            }
+                          </button>
                         </td>
                         <td className="total-cell-excel">
                           ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
@@ -642,28 +636,16 @@ function DetalleAlquiler() {
                           </div>
                         </td>
                         <td className="detalle-cell">
-                          {notaEditandoDepto3C === fila.mes ? (
-                            <input
-                              type="text"
-                              className="form-control nota-gasto-input"
-                              value={notasGastosDepto3C[fila.mes] || ''}
-                              onChange={(e) => handleNotaGastoChangeDepto3C(fila.mes, e.target.value)}
-                              onBlur={() => setNotaEditandoDepto3C(null)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') setNotaEditandoDepto3C(null)
-                              }}
-                              autoFocus
-                              placeholder="Escribe aquí..."
-                            />
-                          ) : (
-                            <button
-                              className="nota-gasto-btn"
-                              onClick={() => setNotaEditandoDepto3C(fila.mes)}
-                              title="Click para editar detalle"
-                            >
-                              {notasGastosDepto3C[fila.mes] || '📝 Agregar detalle'}
-                            </button>
-                          )}
+                          <button
+                            className={`nota-gasto-btn${notasGastosDepto3C[fila.mes] ? ' nota-gasto-btn--con-texto' : ''}`}
+                            onClick={() => abrirModal('depto3c', fila.mes, notasGastosDepto3C[fila.mes])}
+                            title="Click para ver/editar detalle"
+                          >
+                            {notasGastosDepto3C[fila.mes]
+                              ? <span className="nota-preview">{notasGastosDepto3C[fila.mes]}</span>
+                              : '📝 Agregar detalle'
+                            }
+                          </button>
                         </td>
                         <td className="total-cell-excel">
                           ${formatearNumero(calcularTotal(fila.alquiler, fila.gastos, fila.comisionAdm))}
@@ -695,6 +677,34 @@ function DetalleAlquiler() {
       >
         Volver
       </button>
+
+      {/* ── MODAL DETALLE ────────────────────────────────────────────────── */}
+      {modal && (
+        <div className="detalle-modal-overlay" onClick={() => cerrarModal(false)}>
+          <div className="detalle-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="detalle-modal-header">
+              <h3 className="detalle-modal-title">Detalle – {modal.mes}</h3>
+              <button className="detalle-modal-close" onClick={() => cerrarModal(false)}>✕</button>
+            </div>
+            <textarea
+              className="detalle-modal-textarea"
+              value={modalTexto}
+              onChange={(e) => setModalTexto(e.target.value)}
+              placeholder="Escribe el detalle aquí..."
+              autoFocus
+            />
+            <div className="detalle-modal-footer">
+              <button className="detalle-modal-btn detalle-modal-btn--cancelar" onClick={() => cerrarModal(false)}>
+                Cancelar
+              </button>
+              <button className="detalle-modal-btn detalle-modal-btn--guardar" onClick={() => cerrarModal(true)}>
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
