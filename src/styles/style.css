@@ -1753,3 +1753,122 @@ z-index: 1;
     grid-template-columns: 1fr;
   }
 }
+/* ============================================
+   OPTIMIZACIÓN TABLA - AGREGAR AL FINAL DEL CSS
+   ============================================ */
+
+/* Hacer que la tabla se adapte al contenido */
+.alquiler-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabla con ancho mínimo para evitar colapso */
+.alquiler-table-excel {
+  min-width: 600px;
+  table-layout: auto !important;
+}
+
+/* Columna de mes - ancho fijo razonable */
+.mes-cell-excel {
+  white-space: nowrap;
+  min-width: 110px;
+  width: 110px;
+}
+
+/* Celdas de total/números: nunca cortar */
+.total-cell-excel {
+  white-space: nowrap;
+  min-width: 140px;
+  text-align: right;
+  padding: 1rem !important;
+}
+
+/* Inputs numéricos: ancho mínimo para números grandes */
+.alquiler-input-excel {
+  min-width: 120px !important;
+  width: 100% !important;
+}
+
+/* Highlights: no cortar números */
+.mitad-highlight,
+.comision-highlight,
+.transferir-highlight {
+  white-space: nowrap;
+  min-width: 150px;
+}
+
+/* Celdas de th: no cortar texto */
+.alquiler-table-excel thead th {
+  white-space: nowrap;
+  padding: 1rem 0.8rem;
+}
+
+/* Textarea de campo - tamaño mínimo útil */
+.campo-textarea {
+  min-width: 120px;
+}
+
+/* Columna condición */
+.alquiler-table-excel td:last-child {
+  min-width: 150px;
+}
+
+/* Scrollbar visible y estilizada */
+.alquiler-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.alquiler-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.alquiler-table-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+/* Responsive: en pantallas medianas reducir padding */
+@media (max-width: 1200px) {
+  .total-cell-excel {
+    font-size: 0.95rem;
+    min-width: 120px;
+    padding: 0.8rem 0.6rem !important;
+  }
+
+  .alquiler-table-excel thead th {
+    font-size: 0.95rem;
+    padding: 0.9rem 0.6rem;
+  }
+
+  .mes-cell-excel {
+    font-size: 0.95rem;
+    padding: 0.8rem 0.8rem;
+    min-width: 95px;
+    width: 95px;
+  }
+
+  .alquiler-input-excel {
+    min-width: 100px !important;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .alquiler-table-wrapper {
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  .total-cell-excel {
+    font-size: 0.88rem;
+    min-width: 105px;
+  }
+
+  .mitad-highlight,
+  .comision-highlight,
+  .transferir-highlight {
+    min-width: 120px;
+  }
+}
