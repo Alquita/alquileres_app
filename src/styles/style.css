@@ -1872,3 +1872,92 @@ z-index: 1;
     min-width: 120px;
   }
 }
+
+/* ============================================
+   FIX TABLA COCHERA / TABLAS DENTRO DE CONTENT-WRAPPER
+   ============================================ */
+
+/* Cuando la tabla está dentro del layout con contrato al lado,
+   reducir anchos mínimos para que quepa */
+   .alquiler-content-wrapper .alquiler-table-wrapper {
+    overflow-x: auto;
+    min-width: 0;
+  }
+  
+  .alquiler-content-wrapper .alquiler-table-excel {
+    min-width: 480px;
+  }
+  
+  .alquiler-content-wrapper .mes-cell-excel {
+    min-width: 80px;
+    width: 80px;
+    font-size: 0.9rem;
+    padding: 0.7rem 0.5rem;
+  }
+  
+  .alquiler-content-wrapper .total-cell-excel {
+    min-width: 110px;
+    font-size: 0.95rem;
+    padding: 0.7rem 0.6rem !important;
+    white-space: nowrap;
+  }
+  
+  .alquiler-content-wrapper .alquiler-input-excel {
+    min-width: 85px !important;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.45rem 0.45rem 22px;
+  }
+  
+  .alquiler-content-wrapper .alquiler-table-excel thead th {
+    font-size: 0.85rem;
+    padding: 0.8rem 0.4rem;
+    white-space: nowrap;
+  }
+  
+  .alquiler-content-wrapper .detalle-cell {
+    max-width: 120px;
+    min-width: 90px;
+  }
+  
+  .alquiler-content-wrapper .nota-gasto-btn {
+    font-size: 0.78rem;
+    padding: 0.4rem;
+  }
+  
+  @media (max-width: 1300px) {
+    .alquiler-content-wrapper {
+      flex-direction: column;
+    }
+  
+    .alquiler-content-wrapper .alquiler-table-excel {
+      min-width: 600px;
+    }
+  
+    .alquiler-content-wrapper .mes-cell-excel {
+      min-width: 110px;
+      width: 110px;
+      font-size: 1rem;
+      padding: 1rem 1.5rem;
+    }
+  
+    .alquiler-content-wrapper .total-cell-excel {
+      min-width: 140px;
+      font-size: 1.1rem;
+      padding: 1rem !important;
+    }
+  
+    .alquiler-content-wrapper .alquiler-input-excel {
+      min-width: 120px !important;
+      font-size: 1rem;
+      padding: 0.6rem 0.6rem 0.6rem 24px;
+    }
+  
+    .alquiler-content-wrapper .alquiler-table-excel thead th {
+      font-size: 1.1rem;
+      padding: 1rem 0.8rem;
+    }
+  
+    .contrato-box {
+      width: 100% !important;
+    }
+  }
