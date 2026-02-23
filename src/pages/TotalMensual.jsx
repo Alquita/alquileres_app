@@ -85,6 +85,12 @@ function TotalMensual() {
     return guardado ? parseFloat(guardado) : 0
   })
 
+  // Condiciones por mes
+  const [condiciones, setCondiciones] = useState(() => {
+    const guardado = localStorage.getItem('total-mensual-condiciones')
+    return guardado ? JSON.parse(guardado) : Array(12).fill('')
+  })
+
   useEffect(() => {
     calcularTotales()
   }, [])
@@ -96,6 +102,16 @@ function TotalMensual() {
   useEffect(() => {
     localStorage.setItem('porcentaje-comision-segundo-semestre', porcentajeSegundoSemestre.toString())
   }, [porcentajeSegundoSemestre])
+
+  useEffect(() => {
+    localStorage.setItem('total-mensual-condiciones', JSON.stringify(condiciones))
+  }, [condiciones])
+
+  const handleCondicionChange = (index, valor) => {
+    const nuevasCondiciones = [...condiciones]
+    nuevasCondiciones[index] = valor
+    setCondiciones(nuevasCondiciones)
+  }
 
   const calcularTotales = () => {
     const totales = meses.map((mes, mesIndex) => {
@@ -111,7 +127,6 @@ function TotalMensual() {
           const datosMes = datos[mesIndex]
           
           if (datosMes) {
-            // Total = alquiler - gastos - comisionAdm
             const totalDepto = (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
             totalMes += totalDepto
           }
@@ -128,7 +143,6 @@ function TotalMensual() {
           const datosMes = datos[mesIndex]
           
           if (datosMes) {
-            // Total = alquiler - gastos - comisionAdm
             const totalTablaSecundaria = (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
             totalMes += totalTablaSecundaria
           }
@@ -149,8 +163,6 @@ function TotalMensual() {
 
   // Función que determina qué porcentaje usar según el mes
   const getPorcentajeComision = (mesIndex) => {
-    // Enero (0) a Junio (5) = primer semestre
-    // Julio (6) a Diciembre (11) = segundo semestre
     return mesIndex <= 5 ? porcentajePrimerSemestre : porcentajeSegundoSemestre
   }
 
@@ -224,6 +236,7 @@ function TotalMensual() {
               <th className="text-center">Mitad (÷2)</th>
               <th className="text-center">Comisión</th>
               <th className="text-center">Transferir</th>
+              <th className="text-center">Condición</th>
             </tr>
           </thead>
           <tbody>
@@ -241,6 +254,15 @@ function TotalMensual() {
                 </td>
                 <td className="total-cell-excel transferir-highlight">
                   ${formatearNumero(calcularTransferir(fila.mitad, index))}
+                </td>
+                <td>
+                  <textarea
+                    className="form-control campo-textarea"
+                    value={condiciones[index]}
+                    onChange={(e) => handleCondicionChange(index, e.target.value)}
+                    placeholder="Escribe aquí..."
+                    rows="2"
+                  />
                 </td>
               </tr>
             ))}
