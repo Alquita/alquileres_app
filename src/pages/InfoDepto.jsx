@@ -97,14 +97,6 @@ function InfoDepto() {
             >
               Comercio
             </a>
-            <a 
-              href="https://emosvirtual.riocuarto.gov.ar:9090/emosweb/servlet/com.emosweb.login"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="municipal-link-btn"
-            >
-              EMOS
-            </a>
           </div>
 
           <div className="municipal-digits farmacia-digits">
