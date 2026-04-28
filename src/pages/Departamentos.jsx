@@ -147,7 +147,8 @@ function Departamentos() {
     { 
       id: 'libertador-i', 
       nombre: 'LIBERTADOR I', 
-      direccion: 'Pringles 242 - Depto 5 B'
+      direccion: 'Pringles 242 - Depto 5 B',
+      municipal: ['1', '2', '203', '3', '27']
     }
   ]
 
