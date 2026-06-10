@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2E7D6F"/>
+      <stop offset="100%" stop-color="#1B5E4A"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Campo: colinas onduladas -->
+  <path d="M-20 340 Q60 280 140 340 Q240 270 320 340 Q400 290 532 340 L532 532 L-20 532 Z" fill="#81C784" opacity="0.35"/>
+  <path d="M-20 390 Q80 350 180 390 Q260 360 340 390 Q440 350 532 400 L532 532 L-20 532 Z" fill="#A5D6A7" opacity="0.25"/>
+
+  <!-- Departamento (edificio izquierda) -->
+  <rect x="70" y="140" width="150" height="230" rx="6" fill="#ECEFF1"/>
+  <rect x="65" y="130" width="160" height="16" rx="3" fill="#90A4AE"/>
+  <line x1="145" y1="130" x2="145" y2="370" stroke="#CFD8DC" stroke-width="1"/>
+  <rect x="80" y="155" width="50" height="50" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="160" y="155" width="50" height="50" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="80" y="225" width="50" height="50" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="160" y="225" width="50" height="50" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="80" y="295" width="50" height="50" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="160" y="295" width="50" height="50" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="120" y="320" width="50" height="50" rx="3" fill="#6D4C41"/>
+
+  <!-- Casa (derecha) -->
+  <rect x="290" y="200" width="160" height="170" rx="4" fill="#FFF8E1"/>
+  <polygon points="275,200 370,90 465,200" fill="#E53935"/>
+  <polygon points="275,200 370,90 465,200" fill="#EF5350" opacity="0.4"/>
+  <rect x="290" y="110" width="22" height="40" rx="2" fill="#78909C"/>
+  <rect x="295" y="95" width="12" height="20" rx="3" fill="#78909C"/>
+  <rect x="340" y="280" width="60" height="90" rx="4" fill="#6D4C41"/>
+  <rect x="305" y="215" width="35" height="35" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="400" y="215" width="35" height="35" rx="3" fill="#81D4FA" opacity="0.7"/>
+  <rect x="305" y="270" width="25" height="25" rx="3" fill="#81D4FA" opacity="0.7"/>
+</svg>
