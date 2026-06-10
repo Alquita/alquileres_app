@@ -25,13 +25,16 @@ export async function loadProperty(tipo, propietario, unidadId) {
 export async function saveProperty(tipo, propietario, unidadId, propertyData) {
   const { error } = await supabase
     .from('properties')
-    .upsert({
-      tipo,
-      propietario,
-      unidad_id: unidadId,
-      data: propertyData,
-      updated_at: new Date().toISOString()
-    })
+    .upsert(
+      {
+        tipo,
+        propietario,
+        unidad_id: unidadId,
+        data: propertyData,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'tipo,propietario,unidad_id' }
+    )
 
   if (error) {
     console.error('Error saving property to Supabase:', error)
@@ -95,11 +98,14 @@ export async function loadSettings() {
 export async function saveSettings(settingsData) {
   const { error } = await supabase
     .from('settings')
-    .upsert({
-      id: 1,
-      data: settingsData,
-      updated_at: new Date().toISOString()
-    })
+    .upsert(
+      {
+        id: 1,
+        data: settingsData,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'id' }
+    )
 
   if (error) {
     console.error('Error saving settings to Supabase:', error)
@@ -130,7 +136,6 @@ export async function migrateCampoFromLocalStorage(key) {
   if (!saved) return false
 
   const data = JSON.parse(saved)
-  // Campo data goes into settings as well, under "campo"
   const settings = (await loadSettings()) || {}
   settings.campo = {}
   settings.campo[key] = data
