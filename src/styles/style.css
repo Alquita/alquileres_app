@@ -140,18 +140,25 @@
   }
 }
 
-.info-table {
+.info-table-wrapper {
   width: 95%;
   max-width: 1200px;
   margin: 0 auto 2rem;
-  background-color: #ffffff;
   border-radius: 16px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  table-layout: fixed;
   animation: fadeInUp 1s ease-out 0.3s backwards;
   position: relative;
   z-index: 1;
+}
+
+.info-table {
+  width: 100%;
+  margin: 0;
+  background-color: #ffffff;
+  border-radius: 0;
 }
 
 @keyframes fadeInUp {
@@ -172,7 +179,7 @@
   padding: 1.3rem;
   font-weight: 600;
   letter-spacing: 0.5px;
-  width: 33.33%;
+  white-space: nowrap;
   position: relative;
   overflow: hidden;
 }
@@ -204,7 +211,7 @@
   transition: all 0.3s ease;
   vertical-align: middle;
   text-align: center;
-  width: 33.33%;
+  white-space: nowrap;
 }
 
 .info-table tbody tr {
@@ -1052,7 +1059,8 @@ width: 95%;
 max-width: 1200px;
 background-color: #ffffff;
 border-radius: 16px;
-overflow: hidden;
+overflow-x: auto;
+overflow-y: hidden;
 box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15);
 animation: fadeInUp 1s ease-out 0.3s backwards;
 position: relative;
@@ -1281,23 +1289,103 @@ transform: translateY(-1px);
 /* Responsive adjustments */
 @media (max-width: 768px) {
 .alquiler-page-title {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 }
 
-.alquiler-table-wrapper {
-  width: 100%;
+.alquiler-content-wrapper {
+  width: 100% !important;
+  align-items: stretch !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.mes-cell-excel,
-.total-cell-excel {
-  font-size: 0.9rem;
-  padding: 0.8rem 0.5rem;
+.alquiler-table-section {
+  width: 100% !important;
+}
+
+.alquiler-table-wrapper,
+.alquiler-content-wrapper .alquiler-table-wrapper {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.alquiler-table-excel,
+.alquiler-content-wrapper .alquiler-table-excel {
+  min-width: 520px;
+}
+
+.alquiler-content-wrapper .alquiler-input-excel {
+  min-width: 65px !important;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.25rem 0.25rem 16px;
 }
 
 .alquiler-input-excel {
-  font-size: 0.9rem;
-  padding: 0.5rem;
-  min-width: 120px;
+  min-width: 65px;
+  font-size: 0.75rem;
+  padding: 0.25rem;
+}
+
+.alquiler-content-wrapper .mes-cell-excel {
+  min-width: 60px;
+  width: 60px;
+  font-size: 0.75rem;
+  padding: 0.3rem;
+}
+
+.mes-cell-excel {
+  min-width: 60px;
+  width: 60px;
+  font-size: 0.75rem;
+  padding: 0.3rem;
+}
+
+.alquiler-content-wrapper .total-cell-excel {
+  min-width: 80px;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.3rem !important;
+}
+
+.total-cell-excel {
+  min-width: 80px;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.3rem;
+}
+
+.alquiler-content-wrapper .alquiler-table-excel thead th {
+  font-size: 0.7rem;
+  padding: 0.4rem 0.2rem;
+  white-space: nowrap;
+}
+
+.alquiler-table-excel thead th {
+  font-size: 0.7rem;
+  padding: 0.4rem 0.2rem;
+  white-space: nowrap;
+}
+
+.currency-symbol {
+  font-size: 0.7rem;
+}
+
+.alquiler-content-wrapper .detalle-cell {
+  max-width: 70px;
+  min-width: 50px;
+}
+
+.alquiler-content-wrapper .nota-gasto-btn {
+  font-size: 0.6rem;
+  padding: 0.2rem;
+}
+
+.info-title {
+  font-size: 1.5rem;
+}
+
+.info-table-wrapper {
+  width: 100%;
 }
 }
 /* Control de comisión */
@@ -1927,6 +2015,7 @@ z-index: 1;
   @media (max-width: 1300px) {
     .alquiler-content-wrapper {
       flex-direction: column;
+      align-items: stretch;
     }
   
     .alquiler-content-wrapper .alquiler-table-excel {
@@ -2174,3 +2263,160 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ============================================
+   FIX MOBILE SCROLL - REEMPLAZAR/AGREGAR AL FINAL
+   ============================================ */
+
+/* El container NO puede tener padding horizontal en mobile,
+   porque eso compite con el scroll horizontal de las tablas */
+   @media (max-width: 768px) {
+    .alquiler-page-container {
+      padding-left: 0;
+      padding-right: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+  
+    /* El título y botón volver sí tienen padding */
+    .alquiler-page-title {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  
+    .alquiler-page-container > .btn {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+  
+    /* El wrapper de tabla ocupa todo el ancho disponible */
+    .alquiler-table-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 0 !important;
+      margin-bottom: 1rem;
+      /* CLAVE: esto permite el scroll horizontal */
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+  
+    /* El content-wrapper (tabla + contrato) también ocupa todo */
+    .alquiler-content-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0;
+      gap: 0;
+      flex-direction: column;
+      overflow: visible !important;
+    }
+  
+    /* La sección de tabla dentro del wrapper */
+    .alquiler-table-section {
+      width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+  
+    /* El wrapper de tabla dentro del content-wrapper */
+    .alquiler-content-wrapper .alquiler-table-wrapper {
+      width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      border-radius: 0 !important;
+    }
+  
+    /* Contrato va abajo con padding */
+    .contrato-box {
+      width: 100% !important;
+      border-radius: 0 !important;
+      margin-bottom: 1rem;
+    }
+  
+    /* Tamaños de tabla en mobile */
+    .alquiler-table-excel {
+      min-width: 480px !important;
+    }
+  
+    .alquiler-content-wrapper .alquiler-table-excel {
+      min-width: 480px !important;
+    }
+  
+    /* Columna mes más chica */
+    .mes-cell-excel,
+    .alquiler-content-wrapper .mes-cell-excel {
+      min-width: 70px !important;
+      width: 70px !important;
+      font-size: 0.72rem !important;
+      padding: 0.4rem 0.3rem !important;
+      white-space: nowrap;
+    }
+  
+    /* Inputs más chicos */
+    .alquiler-input-excel,
+    .alquiler-content-wrapper .alquiler-input-excel {
+      min-width: 70px !important;
+      font-size: 0.72rem !important;
+      padding: 0.3rem 0.3rem 0.3rem 16px !important;
+    }
+  
+    /* Totales más chicos */
+    .total-cell-excel,
+    .alquiler-content-wrapper .total-cell-excel {
+      min-width: 85px !important;
+      font-size: 0.75rem !important;
+      padding: 0.4rem 0.3rem !important;
+      white-space: nowrap;
+    }
+  
+    /* Headers de columna */
+    .alquiler-table-excel thead th,
+    .alquiler-content-wrapper .alquiler-table-excel thead th {
+      font-size: 0.68rem !important;
+      padding: 0.5rem 0.25rem !important;
+      white-space: nowrap;
+    }
+  
+    /* Celda detalle */
+    .detalle-cell,
+    .alquiler-content-wrapper .detalle-cell {
+      min-width: 60px !important;
+      max-width: 70px !important;
+      padding: 0.25rem !important;
+    }
+  
+    .nota-gasto-btn,
+    .alquiler-content-wrapper .nota-gasto-btn {
+      font-size: 0.58rem !important;
+      padding: 0.2rem !important;
+    }
+  
+    /* Símbolo de moneda */
+    .currency-symbol {
+      font-size: 0.65rem !important;
+      left: 4px !important;
+    }
+  
+    /* Candado */
+    .lock-btn {
+      font-size: 11px !important;
+      padding: 1px 2px !important;
+    }
+  
+    /* Highlights no se escalen en hover en mobile */
+    .mitad-highlight,
+    .comision-highlight,
+    .transferir-highlight {
+      min-width: 85px !important;
+      white-space: nowrap;
+    }
+  
+    /* Filas no se escalen en hover en mobile (causa problemas de layout) */
+    .alquiler-table-excel tbody tr:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+  
+    .alquiler-table-excel tbody tr:hover .total-cell-excel {
+      transform: none !important;
+    }
+  }

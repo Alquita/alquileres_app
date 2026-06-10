@@ -160,66 +160,68 @@ function Info() {
     <div className="info-container">
       <h2 className="info-title">Información de Propiedades</h2>
 
-      <table className="table info-table text-center align-middle">
-        <thead>
-          <tr>
-            <th>Yani</th>
-            <th>Yani y Fabián</th>
-            <th>Fabián</th>
-            <th>Vendidos</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: maxLength }).map((_, index) => (
-            <tr key={index}>
-              <td>
-                {propiedadesYani[index] ? (
-                  <Link
-                    to={`/info/yani/${propiedadesYani[index].id}`}
-                    state={propiedadesYani[index]}
-                    className="info-link"
-                  >
-                    {propiedadesYani[index].nombre}
-                  </Link>
-                ) : null}
-              </td>
-              <td>
-                {propiedadesCompartidas[index] ? (
-                  <Link
-                    to={`/info/compartido/${propiedadesCompartidas[index].id}`}
-                    state={propiedadesCompartidas[index]}
-                    className="info-link"
-                  >
-                    {propiedadesCompartidas[index].nombre}
-                  </Link>
-                ) : null}
-              </td>
-              <td>
-                {propiedadesFabian[index] ? (
-                  <Link
-                    to={`/info/fabian/${propiedadesFabian[index].id}`}
-                    state={propiedadesFabian[index]}
-                    className="info-link"
-                  >
-                    {propiedadesFabian[index].nombre}
-                  </Link>
-                ) : null}
-              </td>
-              <td>
-                {propiedadesVendidas[index] ? (
-                  <Link
-                    to={`/info/vendido/${propiedadesVendidas[index].id}`}
-                    state={propiedadesVendidas[index]}
-                    className="info-link"
-                  >
-                    {propiedadesVendidas[index].nombre}
-                  </Link>
-                ) : null}
-              </td>
+      <div className="info-table-wrapper">
+        <table className="table info-table text-center align-middle">
+          <thead>
+            <tr>
+              <th>Yani</th>
+              <th>Yani y Fabián</th>
+              <th>Fabián</th>
+              <th>Vendidos</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {Array.from({ length: maxLength }).map((_, index) => (
+              <tr key={index}>
+                <td>
+                  {propiedadesYani[index] ? (
+                    <Link
+                      to={`/info/yani/${propiedadesYani[index].id}`}
+                      state={propiedadesYani[index]}
+                      className="info-link"
+                    >
+                      {propiedadesYani[index].nombre}
+                    </Link>
+                  ) : null}
+                </td>
+                <td>
+                  {propiedadesCompartidas[index] ? (
+                    <Link
+                      to={`/info/compartido/${propiedadesCompartidas[index].id}`}
+                      state={propiedadesCompartidas[index]}
+                      className="info-link"
+                    >
+                      {propiedadesCompartidas[index].nombre}
+                    </Link>
+                  ) : null}
+                </td>
+                <td>
+                  {propiedadesFabian[index] ? (
+                    <Link
+                      to={`/info/fabian/${propiedadesFabian[index].id}`}
+                      state={propiedadesFabian[index]}
+                      className="info-link"
+                    >
+                      {propiedadesFabian[index].nombre}
+                    </Link>
+                  ) : null}
+                </td>
+                <td>
+                  {propiedadesVendidas[index] ? (
+                    <Link
+                      to={`/info/vendido/${propiedadesVendidas[index].id}`}
+                      state={propiedadesVendidas[index]}
+                      className="info-link"
+                    >
+                      {propiedadesVendidas[index].nombre}
+                    </Link>
+                  ) : null}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <button
         className="btn btn-secondary mt-4"
