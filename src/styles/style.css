@@ -2119,3 +2119,58 @@ z-index: 1;
 .detalle-modal-btn--guardar:active {
   transform: translateY(0);
 }
+
+/* ============================================
+   CANDADO DE BLOQUEO POR FILA
+   ============================================ */
+.mes-cell-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lock-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.lock-btn:hover {
+  transform: scale(1.2);
+}
+
+.lock-btn--locked {
+  opacity: 0.8;
+}
+
+.lock-btn--unlocked {
+  opacity: 0.5;
+}
+
+.lock-btn--unlocked:hover {
+  opacity: 1;
+}
+
+/* Input en estado readOnly (bloqueado) */
+.alquiler-input--readonly {
+  background-color: #f0f0f0 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+
+/* Ocultar spinners de type="number" por si queda algún input */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

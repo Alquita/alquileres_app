@@ -1,5 +1,7 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import MigrateButton from '../components/MigrateButton'
+import { loadProperty, saveProperty, migratePropertyFromLocalStorage } from '../services/syncService'
 
 function DetalleAlquiler() {
   const { tipo, propietario, id } = useParams()
@@ -50,6 +52,11 @@ function DetalleAlquiler() {
   const notasGastosKey = `notas-gastos-${tipo}-${propietario}-${id}`
   const notasGastosKeyCochera = `notas-gastos-${tipo}-${propietario}-${id}-cochera`
   const notasGastosKeyDepto3C = `notas-gastos-${tipo}-${propietario}-${id}-depto3c`
+
+  // Keys de bloqueo SEPARADOS por tabla
+  const lockKey = `lock-${tipo}-${propietario}-${id}-principal`
+  const lockKeyCochera = `lock-${tipo}-${propietario}-${id}-cochera`
+  const lockKeyDepto3C = `lock-${tipo}-${propietario}-${id}-depto3c`
 
   // Departamentos que tienen contrato
   const tieneContrato = () => {
@@ -198,6 +205,27 @@ function DetalleAlquiler() {
   const [notaEditandoCochera, setNotaEditandoCochera] = useState(null)
   const [notaEditandoDepto3C, setNotaEditandoDepto3C] = useState(null)
 
+  // Estados de bloqueo SEPARADOS
+  const [lockedMeses, setLockedMeses] = useState(() => {
+    const saved = localStorage.getItem(lockKey)
+    if (saved) return JSON.parse(saved)
+    return meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
+  })
+
+  const [lockedMesesCochera, setLockedMesesCochera] = useState(() => {
+    if (!esPuertasDelSol) return {}
+    const saved = localStorage.getItem(lockKeyCochera)
+    if (saved) return JSON.parse(saved)
+    return meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
+  })
+
+  const [lockedMesesDepto3C, setLockedMesesDepto3C] = useState(() => {
+    if (!esRoblesXIVFabian) return {}
+    const saved = localStorage.getItem(lockKeyDepto3C)
+    if (saved) return JSON.parse(saved)
+    return meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
+  })
+
   // Guardar datos principales
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(datos))
@@ -252,6 +280,91 @@ function DetalleAlquiler() {
     }
   }, [notasGastosDepto3C, notasGastosKeyDepto3C, esRoblesXIVFabian])
 
+  // Guardar estados de bloqueo
+  useEffect(() => {
+    localStorage.setItem(lockKey, JSON.stringify(lockedMeses))
+  }, [lockedMeses, lockKey])
+
+  useEffect(() => {
+    if (esPuertasDelSol) {
+      localStorage.setItem(lockKeyCochera, JSON.stringify(lockedMesesCochera))
+    }
+  }, [lockedMesesCochera, lockKeyCochera, esPuertasDelSol])
+
+  useEffect(() => {
+    if (esRoblesXIVFabian) {
+      localStorage.setItem(lockKeyDepto3C, JSON.stringify(lockedMesesDepto3C))
+    }
+  }, [lockedMesesDepto3C, lockKeyDepto3C, esRoblesXIVFabian])
+
+  // ── SUPABASE: cargar datos desde la nube al montar ────────
+  useEffect(() => {
+    let cancelled = false
+    async function loadFromSupabase() {
+      const data = await loadProperty(tipo, propietario, id)
+      if (cancelled || !data) return
+
+      if (data.principal) setDatos(data.principal)
+      if (data.contrato_principal !== undefined && data.contrato_principal !== null) setContrato(data.contrato_principal)
+      if (data.notas_principal) setNotasGastos(data.notas_principal)
+      if (data.lock_principal) setLockedMeses(data.lock_principal)
+
+      if (esPuertasDelSol) {
+        if (data.cochera) setDatosCochera(data.cochera)
+        if (data.contrato_cochera !== undefined && data.contrato_cochera !== null) setContratoCochera(data.contrato_cochera)
+        if (data.notas_cochera) setNotasGastosCochera(data.notas_cochera)
+        if (data.lock_cochera) setLockedMesesCochera(data.lock_cochera)
+      }
+
+      if (esRoblesXIVFabian) {
+        if (data.depto3c) setDatosDepto3C(data.depto3c)
+        if (data.contrato_depto3c !== undefined && data.contrato_depto3c !== null) setContratoDepto3C(data.contrato_depto3c)
+        if (data.notas_depto3c) setNotasGastosDepto3C(data.notas_depto3c)
+        if (data.lock_depto3c) setLockedMesesDepto3C(data.lock_depto3c)
+      }
+    }
+    loadFromSupabase()
+    return () => { cancelled = true }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── SUPABASE: guardar cambios con debounce ────────────────
+  const saveToSupabase = useCallback(async () => {
+    const data = {
+      principal: datos,
+      contrato_principal: contrato,
+      notas_principal: notasGastos,
+      lock_principal: lockedMeses
+    }
+    if (esPuertasDelSol) {
+      data.cochera = datosCochera
+      data.contrato_cochera = contratoCochera
+      data.notas_cochera = notasGastosCochera
+      data.lock_cochera = lockedMesesCochera
+    }
+    if (esRoblesXIVFabian) {
+      data.depto3c = datosDepto3C
+      data.contrato_depto3c = contratoDepto3C
+      data.notas_depto3c = notasGastosDepto3C
+      data.lock_depto3c = lockedMesesDepto3C
+    }
+    await saveProperty(tipo, propietario, id, data)
+  }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
+      notasGastos, notasGastosCochera, notasGastosDepto3C,
+      lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
+      esPuertasDelSol, esRoblesXIVFabian, tipo, propietario, id])
+
+  useEffect(() => {
+    const timer = setTimeout(() => { saveToSupabase() }, 2000)
+    return () => clearTimeout(timer)
+  }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
+      notasGastos, notasGastosCochera, notasGastosDepto3C,
+      lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
+      esPuertasDelSol, esRoblesXIVFabian, saveToSupabase])
+
+  const handleMigrate = async () => {
+    return await migratePropertyFromLocalStorage(tipo, propietario, id)
+  }
+
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
     nuevosDatos[index][campo] = parseFloat(valor) || 0
@@ -303,6 +416,16 @@ function DetalleAlquiler() {
     }))
   }
 
+  const toggleLock = (tabla, mes) => {
+    if (tabla === 'principal') {
+      setLockedMeses(prev => ({ ...prev, [mes]: !prev[mes] }))
+    } else if (tabla === 'cochera') {
+      setLockedMesesCochera(prev => ({ ...prev, [mes]: !prev[mes] }))
+    } else if (tabla === 'depto3c') {
+      setLockedMesesDepto3C(prev => ({ ...prev, [mes]: !prev[mes] }))
+    }
+  }
+
   const calcularTotal = (alquiler, gastos, comisionAdm) => {
     return alquiler - (gastos || 0) - (comisionAdm || 0)
   }
@@ -339,15 +462,28 @@ function DetalleAlquiler() {
                   <tbody>
                     {datos.map((fila, index) => (
                       <tr key={index}>
-                        <td className="mes-cell-excel">{fila.mes}</td>
+                        <td className="mes-cell-excel">
+                          <span className="mes-cell-content">
+                            {fila.mes}
+                            <button
+                              className={`lock-btn ${lockedMeses[fila.mes] ? 'lock-btn--locked' : 'lock-btn--unlocked'}`}
+                              onClick={() => toggleLock('principal', fila.mes)}
+                              title={lockedMeses[fila.mes] ? 'Desbloquear' : 'Bloquear'}
+                            >
+                              {lockedMeses[fila.mes] ? '🔒' : '🔓'}
+                            </button>
+                          </span>
+                        </td>
                         <td>
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMeses[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.alquiler || ''}
                               onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMeses[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -356,10 +492,12 @@ function DetalleAlquiler() {
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMeses[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.gastos || ''}
                               onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMeses[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -368,10 +506,12 @@ function DetalleAlquiler() {
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMeses[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.comisionAdm || ''}
                               onChange={(e) => handleInputChange(index, 'comisionAdm', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMeses[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -427,15 +567,28 @@ function DetalleAlquiler() {
               <tbody>
                 {datos.map((fila, index) => (
                   <tr key={index}>
-                    <td className="mes-cell-excel">{fila.mes}</td>
+                    <td className="mes-cell-excel">
+                      <span className="mes-cell-content">
+                        {fila.mes}
+                        <button
+                          className={`lock-btn ${lockedMeses[fila.mes] ? 'lock-btn--locked' : 'lock-btn--unlocked'}`}
+                          onClick={() => toggleLock('principal', fila.mes)}
+                          title={lockedMeses[fila.mes] ? 'Desbloquear' : 'Bloquear'}
+                        >
+                          {lockedMeses[fila.mes] ? '🔒' : '🔓'}
+                        </button>
+                      </span>
+                    </td>
                     <td>
                       <div className="input-with-currency">
                         <span className="currency-symbol">$</span>
                         <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
+                          type="text" inputMode="decimal"
+                          className={`form-control alquiler-input-excel${lockedMeses[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                           value={fila.alquiler || ''}
                           onChange={(e) => handleInputChange(index, 'alquiler', e.target.value)}
+                          onWheel={(e) => e.target.blur()}
+                          readOnly={lockedMeses[fila.mes]}
                           placeholder="0"
                         />
                       </div>
@@ -444,10 +597,12 @@ function DetalleAlquiler() {
                       <div className="input-with-currency">
                         <span className="currency-symbol">$</span>
                         <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
+                          type="text" inputMode="decimal"
+                          className={`form-control alquiler-input-excel${lockedMeses[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                           value={fila.gastos || ''}
                           onChange={(e) => handleInputChange(index, 'gastos', e.target.value)}
+                          onWheel={(e) => e.target.blur()}
+                          readOnly={lockedMeses[fila.mes]}
                           placeholder="0"
                         />
                       </div>
@@ -456,10 +611,12 @@ function DetalleAlquiler() {
                       <div className="input-with-currency">
                         <span className="currency-symbol">$</span>
                         <input
-                          type="number"
-                          className="form-control alquiler-input-excel"
+                          type="text" inputMode="decimal"
+                          className={`form-control alquiler-input-excel${lockedMeses[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                           value={fila.comisionAdm || ''}
                           onChange={(e) => handleInputChange(index, 'comisionAdm', e.target.value)}
+                          onWheel={(e) => e.target.blur()}
+                          readOnly={lockedMeses[fila.mes]}
                           placeholder="0"
                         />
                       </div>
@@ -506,15 +663,28 @@ function DetalleAlquiler() {
                   <tbody>
                     {datosCochera.map((fila, index) => (
                       <tr key={index}>
-                        <td className="mes-cell-excel">{fila.mes}</td>
+                        <td className="mes-cell-excel">
+                          <span className="mes-cell-content">
+                            {fila.mes}
+                            <button
+                              className={`lock-btn ${lockedMesesCochera[fila.mes] ? 'lock-btn--locked' : 'lock-btn--unlocked'}`}
+                              onClick={() => toggleLock('cochera', fila.mes)}
+                              title={lockedMesesCochera[fila.mes] ? 'Desbloquear' : 'Bloquear'}
+                            >
+                              {lockedMesesCochera[fila.mes] ? '🔒' : '🔓'}
+                            </button>
+                          </span>
+                        </td>
                         <td>
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMesesCochera[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.alquiler || ''}
                               onChange={(e) => handleInputChangeCochera(index, 'alquiler', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMesesCochera[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -523,10 +693,12 @@ function DetalleAlquiler() {
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMesesCochera[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.gastos || ''}
                               onChange={(e) => handleInputChangeCochera(index, 'gastos', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMesesCochera[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -535,10 +707,12 @@ function DetalleAlquiler() {
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMesesCochera[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.comisionAdm || ''}
                               onChange={(e) => handleInputChangeCochera(index, 'comisionAdm', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMesesCochera[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -598,15 +772,28 @@ function DetalleAlquiler() {
                   <tbody>
                     {datosDepto3C.map((fila, index) => (
                       <tr key={index}>
-                        <td className="mes-cell-excel">{fila.mes}</td>
+                        <td className="mes-cell-excel">
+                          <span className="mes-cell-content">
+                            {fila.mes}
+                            <button
+                              className={`lock-btn ${lockedMesesDepto3C[fila.mes] ? 'lock-btn--locked' : 'lock-btn--unlocked'}`}
+                              onClick={() => toggleLock('depto3c', fila.mes)}
+                              title={lockedMesesDepto3C[fila.mes] ? 'Desbloquear' : 'Bloquear'}
+                            >
+                              {lockedMesesDepto3C[fila.mes] ? '🔒' : '🔓'}
+                            </button>
+                          </span>
+                        </td>
                         <td>
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMesesDepto3C[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.alquiler || ''}
                               onChange={(e) => handleInputChangeDepto3C(index, 'alquiler', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMesesDepto3C[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -615,10 +802,12 @@ function DetalleAlquiler() {
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMesesDepto3C[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.gastos || ''}
                               onChange={(e) => handleInputChangeDepto3C(index, 'gastos', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMesesDepto3C[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -627,10 +816,12 @@ function DetalleAlquiler() {
                           <div className="input-with-currency">
                             <span className="currency-symbol">$</span>
                             <input
-                              type="number"
-                              className="form-control alquiler-input-excel"
+                              type="text" inputMode="decimal"
+                              className={`form-control alquiler-input-excel${lockedMesesDepto3C[fila.mes] ? ' alquiler-input--readonly' : ''}`}
                               value={fila.comisionAdm || ''}
                               onChange={(e) => handleInputChangeDepto3C(index, 'comisionAdm', e.target.value)}
+                              onWheel={(e) => e.target.blur()}
+                              readOnly={lockedMesesDepto3C[fila.mes]}
                               placeholder="0"
                             />
                           </div>
@@ -671,12 +862,15 @@ function DetalleAlquiler() {
         )}
       </div>
 
-      <button
-        className="btn btn-secondary mt-4"
-        onClick={() => navigate(`/alquileres/${tipo}/${propietario}`)}
-      >
-        Volver
-      </button>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate(`/alquileres/${tipo}/${propietario}`)}
+        >
+          Volver
+        </button>
+        <MigrateButton onMigrate={handleMigrate} />
+      </div>
 
       {/* ── MODAL DETALLE ────────────────────────────────────────────────── */}
       {modal && (

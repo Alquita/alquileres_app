@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import MigrateButton from '../components/MigrateButton'
+import { loadSettings, saveSettings } from '../services/syncService'
 
 function Campo() {
   const navigate = useNavigate()
@@ -41,6 +43,42 @@ function Campo() {
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(datos))
   }, [datos])
+
+  // ── SUPABASE: cargar campo desde la nube al montar ───────
+  useEffect(() => {
+    let cancelled = false
+    async function loadFromSupabase() {
+      const data = await loadSettings()
+      if (cancelled || !data?.campo?.[storageKey]) return
+
+      setDatos(data.campo[storageKey])
+    }
+    loadFromSupabase()
+    return () => { cancelled = true }
+  }, [])
+
+  // ── SUPABASE: guardar campo con debounce ─────────────────
+  const saveToSupabase = useCallback(async () => {
+    const settings = (await loadSettings()) || {}
+    if (!settings.campo) settings.campo = {}
+    settings.campo[storageKey] = datos
+    await saveSettings(settings)
+  }, [datos])
+
+  useEffect(() => {
+    const timer = setTimeout(() => { saveToSupabase() }, 2000)
+    return () => clearTimeout(timer)
+  }, [datos, saveToSupabase])
+
+  const handleMigrate = async () => {
+    const saved = localStorage.getItem(storageKey)
+    if (!saved) return false
+
+    const settings = (await loadSettings()) || {}
+    if (!settings.campo) settings.campo = {}
+    settings.campo[storageKey] = JSON.parse(saved)
+    return await saveSettings(settings)
+  }
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
@@ -119,12 +157,15 @@ function Campo() {
         </table>
       </div>
 
-      <button
-        className="btn btn-secondary mt-4"
-        onClick={() => navigate('/alquileres/seleccion')}
-      >
-        Volver
-      </button>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate('/alquileres/seleccion')}
+        >
+          Volver
+        </button>
+        <MigrateButton onMigrate={handleMigrate} label="Subir campo" />
+      </div>
     </div>
   )
 }

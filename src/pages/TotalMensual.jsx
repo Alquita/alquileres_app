@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import MigrateButton from '../components/MigrateButton'
+import { loadSettings, saveSettings, migrateSettingsFromLocalStorage } from '../services/syncService'
 
 function TotalMensual() {
   const navigate = useNavigate()
@@ -84,6 +86,39 @@ function TotalMensual() {
   useEffect(() => {
     localStorage.setItem('total-mensual-condiciones-v2', JSON.stringify(condiciones))
   }, [condiciones])
+
+  // ── SUPABASE: cargar config desde la nube al montar ──────
+  useEffect(() => {
+    let cancelled = false
+    async function loadFromSupabase() {
+      const data = await loadSettings()
+      if (cancelled || !data) return
+
+      if (data.comision_1er_semestre !== undefined) setPorcentajePrimerSemestre(data.comision_1er_semestre)
+      if (data.comision_2do_semestre !== undefined) setPorcentajeSegundoSemestre(data.comision_2do_semestre)
+      if (data.condiciones) setCondiciones(data.condiciones)
+    }
+    loadFromSupabase()
+    return () => { cancelled = true }
+  }, [])
+
+  // ── SUPABASE: guardar config con debounce ────────────────
+  const saveToSupabase = useCallback(async () => {
+    await saveSettings({
+      comision_1er_semestre: porcentajePrimerSemestre,
+      comision_2do_semestre: porcentajeSegundoSemestre,
+      condiciones
+    })
+  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones])
+
+  useEffect(() => {
+    const timer = setTimeout(() => { saveToSupabase() }, 2000)
+    return () => clearTimeout(timer)
+  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones, saveToSupabase])
+
+  const handleMigrate = async () => {
+    return await migrateSettingsFromLocalStorage()
+  }
 
   const handleCondicionTexto = (index, valor) => {
     const nuevas = [...condiciones]
@@ -266,12 +301,15 @@ function TotalMensual() {
         </table>
       </div>
 
-      <button
-        className="btn btn-secondary mt-4"
-        onClick={() => navigate('/alquileres/seleccion')}
-      >
-        Volver
-      </button>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate('/alquileres/seleccion')}
+        >
+          Volver
+        </button>
+        <MigrateButton onMigrate={handleMigrate} label="Subir condiciones" />
+      </div>
     </div>
   )
 }
