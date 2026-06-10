@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import { loadSettings, saveSettings } from '../services/syncService'
+import { loadProperty, loadSettings, saveSettings } from '../services/syncService'
 
 function TotalMensual() {
   const navigate = useNavigate()
@@ -41,67 +41,97 @@ function TotalMensual() {
     { tipo: 'departamentos', propietario: 'fabian', id: 'robles-xiv-fabian', sufijo: 'depto3c', nombre: 'Depto 3C (Robles XIV)' }
   ]
 
-  // Paleta de colores primarios y secundarios
   const coloresPaleta = [
-    { nombre: 'Negro',   valor: '#212529' },
-    { nombre: 'Rojo',    valor: '#dc3545' },
-    { nombre: 'Azul',    valor: '#0d6efd' },
-    { nombre: 'Amarillo',valor: '#ffc107' },
-    { nombre: 'Verde',   valor: '#198754' },
-    { nombre: 'Naranja', valor: '#fd7e14' },
-    { nombre: 'Violeta', valor: '#6f42c1' },
-    { nombre: 'Rosa',    valor: '#d63384' },
+    { nombre: 'Negro',    valor: '#212529' },
+    { nombre: 'Rojo',     valor: '#dc3545' },
+    { nombre: 'Azul',     valor: '#0d6efd' },
+    { nombre: 'Amarillo', valor: '#ffc107' },
+    { nombre: 'Verde',    valor: '#198754' },
+    { nombre: 'Naranja',  valor: '#fd7e14' },
+    { nombre: 'Violeta',  valor: '#6f42c1' },
+    { nombre: 'Rosa',     valor: '#d63384' },
   ]
 
+  const [cargando, setCargando] = useState(true)
   const [totalesMensuales, setTotalesMensuales] = useState([])
+  const [porcentajePrimerSemestre, setPorcentajePrimerSemestre] = useState(0)
+  const [porcentajeSegundoSemestre, setPorcentajeSegundoSemestre] = useState(0)
+  const [condiciones, setCondiciones] = useState(
+    Array(12).fill(null).map(() => ({ texto: '', color: '#212529' }))
+  )
 
-  const [porcentajePrimerSemestre, setPorcentajePrimerSemestre] = useState(() => {
-    const guardado = localStorage.getItem('porcentaje-comision-primer-semestre')
-    return guardado ? parseFloat(guardado) : 0
-  })
+  // Calcular totales usando datos ya cargados (no hace llamadas extra)
+  const calcularTotales = useCallback((todasLasData) => {
+    const totales = meses.map((mes, mesIndex) => {
+      let totalMes = 0
 
-  const [porcentajeSegundoSemestre, setPorcentajeSegundoSemestre] = useState(() => {
-    const guardado = localStorage.getItem('porcentaje-comision-segundo-semestre')
-    return guardado ? parseFloat(guardado) : 0
-  })
+      todasLasPropiedades.forEach(propiedad => {
+        const data = todasLasData[propiedad.id]
+        const principal = data?.principal
+        if (principal?.[mesIndex]) {
+          const m = principal[mesIndex]
+          totalMes += (m.alquiler || 0) - (m.gastos || 0) - (m.comisionAdm || 0)
+        }
+      })
 
-  // Condiciones: { texto, color } por mes
-  const [condiciones, setCondiciones] = useState(() => {
-    const guardado = localStorage.getItem('total-mensual-condiciones-v2')
-    if (guardado) return JSON.parse(guardado)
-    return Array(12).fill(null).map(() => ({ texto: '', color: '#212529' }))
-  })
+      tablasSecundarias.forEach(t => {
+        const data = todasLasData[t.id]
+        const sub = data?.[t.sufijo]
+        if (sub?.[mesIndex]) {
+          const m = sub[mesIndex]
+          totalMes += (m.alquiler || 0) - (m.gastos || 0) - (m.comisionAdm || 0)
+        }
+      })
 
-  useEffect(() => { calcularTotales() }, [])
+      return { mes, total: totalMes, mitad: totalMes / 2 }
+    })
 
-  useEffect(() => {
-    localStorage.setItem('porcentaje-comision-primer-semestre', porcentajePrimerSemestre.toString())
-  }, [porcentajePrimerSemestre])
+    setTotalesMensuales(totales)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    localStorage.setItem('porcentaje-comision-segundo-semestre', porcentajeSegundoSemestre.toString())
-  }, [porcentajeSegundoSemestre])
-
-  useEffect(() => {
-    localStorage.setItem('total-mensual-condiciones-v2', JSON.stringify(condiciones))
-  }, [condiciones])
-
-  // ── SUPABASE: cargar config desde la nube al montar ──────
+  // ── SUPABASE: cargar todo al montar ───────────────────────
   useEffect(() => {
     let cancelled = false
-    async function loadFromSupabase() {
-      const data = await loadSettings()
-      if (cancelled || !data) return
+    async function load() {
+      setCargando(true)
+      try {
+        // Cargar settings
+        const settings = await loadSettings()
+        if (!cancelled && settings) {
+          if (settings.comision_1er_semestre !== undefined) setPorcentajePrimerSemestre(settings.comision_1er_semestre)
+          if (settings.comision_2do_semestre !== undefined) setPorcentajeSegundoSemestre(settings.comision_2do_semestre)
+          if (settings.condiciones) setCondiciones(settings.condiciones)
+        }
 
-      if (data.comision_1er_semestre !== undefined) setPorcentajePrimerSemestre(data.comision_1er_semestre)
-      if (data.comision_2do_semestre !== undefined) setPorcentajeSegundoSemestre(data.comision_2do_semestre)
-      if (data.condiciones) setCondiciones(data.condiciones)
+        // IDs únicos a cargar (principal + secundarias comparten IDs con todasLasPropiedades)
+        const idsUnicos = [...new Set([
+          ...todasLasPropiedades.map(p => JSON.stringify({ tipo: p.tipo, propietario: p.propietario, id: p.id })),
+          ...tablasSecundarias.map(t => JSON.stringify({ tipo: t.tipo, propietario: t.propietario, id: t.id }))
+        ])].map(s => JSON.parse(s))
+
+        // Cargar todas las propiedades en paralelo (una sola vez)
+        const resultados = await Promise.all(
+          idsUnicos.map(p => loadProperty(p.tipo, p.propietario, p.id))
+        )
+
+        if (cancelled) return
+
+        // Mapear por id para acceso rápido
+        const todasLasData = {}
+        idsUnicos.forEach((p, i) => {
+          todasLasData[p.id] = resultados[i]
+        })
+
+        calcularTotales(todasLasData)
+      } finally {
+        if (!cancelled) setCargando(false)
+      }
     }
-    loadFromSupabase()
+    load()
     return () => { cancelled = true }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── SUPABASE: guardar config con debounce ────────────────
+  // ── SUPABASE: guardar settings con debounce ───────────────
   const saveToSupabase = useCallback(async () => {
     await saveSettings({
       comision_1er_semestre: porcentajePrimerSemestre,
@@ -111,9 +141,10 @@ function TotalMensual() {
   }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones])
 
   useEffect(() => {
+    if (cargando) return
     const timer = setTimeout(() => { saveToSupabase() }, 2000)
     return () => clearTimeout(timer)
-  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones, saveToSupabase])
+  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones, saveToSupabase, cargando])
 
   const handleCondicionTexto = (index, valor) => {
     const nuevas = [...condiciones]
@@ -127,40 +158,6 @@ function TotalMensual() {
     setCondiciones(nuevas)
   }
 
-  const calcularTotales = () => {
-    const totales = meses.map((mes, mesIndex) => {
-      let totalMes = 0
-
-      todasLasPropiedades.forEach(propiedad => {
-        const storageKey = `alquiler-${propiedad.tipo}-${propiedad.propietario}-${propiedad.id}`
-        const datosGuardados = localStorage.getItem(storageKey)
-        if (datosGuardados) {
-          const datos = JSON.parse(datosGuardados)
-          const datosMes = datos[mesIndex]
-          if (datosMes) {
-            totalMes += (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
-          }
-        }
-      })
-
-      tablasSecundarias.forEach(tablaSecundaria => {
-        const storageKey = `alquiler-${tablaSecundaria.tipo}-${tablaSecundaria.propietario}-${tablaSecundaria.id}-${tablaSecundaria.sufijo}`
-        const datosGuardados = localStorage.getItem(storageKey)
-        if (datosGuardados) {
-          const datos = JSON.parse(datosGuardados)
-          const datosMes = datos[mesIndex]
-          if (datosMes) {
-            totalMes += (datosMes.alquiler || 0) - (datosMes.gastos || 0) - (datosMes.comisionAdm || 0)
-          }
-        }
-      })
-
-      return { mes, total: totalMes, mitad: totalMes / 2 }
-    })
-
-    setTotalesMensuales(totales)
-  }
-
   const getPorcentajeComision = (mesIndex) =>
     mesIndex <= 5 ? porcentajePrimerSemestre : porcentajeSegundoSemestre
 
@@ -171,6 +168,8 @@ function TotalMensual() {
     mitad - calcularComision(mitad, mesIndex)
 
   const totalAnual = totalesMensuales.reduce((sum, m) => sum + m.total, 0)
+
+  if (cargando) return <div className="text-center mt-5">Cargando...</div>
 
   return (
     <div className="alquiler-page-container">
@@ -235,14 +234,7 @@ function TotalMensual() {
                 <td className="total-cell-excel comision-highlight">${formatearNumero(calcularComision(fila.mitad, index))}</td>
                 <td className="total-cell-excel transferir-highlight">${formatearNumero(calcularTransferir(fila.mitad, index))}</td>
                 <td style={{ minWidth: 200, padding: '0.5rem 0.6rem', verticalAlign: 'top' }}>
-                  {/* Paleta de colores */}
-                  <div style={{
-                    display: 'flex',
-                    gap: 5,
-                    marginBottom: 6,
-                    flexWrap: 'wrap',
-                    alignItems: 'center'
-                  }}>
+                  <div style={{ display: 'flex', gap: 5, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                     {coloresPaleta.map((color) => {
                       const seleccionado = condiciones[index]?.color === color.valor
                       return (
@@ -251,8 +243,7 @@ function TotalMensual() {
                           title={color.nombre}
                           onClick={() => handleCondicionColor(index, color.valor)}
                           style={{
-                            width: 20,
-                            height: 20,
+                            width: 20, height: 20,
                             borderRadius: '50%',
                             backgroundColor: color.valor,
                             border: seleccionado ? '2px solid #fff' : '2px solid transparent',
@@ -271,17 +262,13 @@ function TotalMensual() {
                       )
                     })}
                   </div>
-                  {/* Textarea con color seleccionado */}
                   <textarea
                     className="form-control campo-textarea"
                     value={condiciones[index]?.texto || ''}
                     onChange={(e) => handleCondicionTexto(index, e.target.value)}
                     placeholder="Escribe aquí..."
                     rows="2"
-                    style={{
-                      color: condiciones[index]?.color || '#212529',
-                      fontWeight: 600,
-                    }}
+                    style={{ color: condiciones[index]?.color || '#212529', fontWeight: 600 }}
                   />
                 </td>
               </tr>

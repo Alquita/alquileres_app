@@ -6,74 +6,65 @@ function Campo() {
   const navigate = useNavigate()
 
   const meses = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre'
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ]
 
-  const storageKey = 'campo-datos'
+  const key = 'campo-datos'
 
-  // Cargar datos guardados o inicializar
-  const [datos, setDatos] = useState(() => {
-    const datosGuardados = localStorage.getItem(storageKey)
-    if (datosGuardados) {
-      return JSON.parse(datosGuardados)
-    }
-    return meses.map(mes => ({
-      mes,
-      promedio: '',
-      saldo: '',
-      recibi: '',
-      diferencia: '',
-      aclaracion: ''
-    }))
-  })
+  const [cargando, setCargando] = useState(true)
+  const [datos, setDatos] = useState([])
 
-  // Guardar en localStorage cada vez que cambien
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(datos))
-  }, [datos])
-
-  // ── SUPABASE: cargar campo desde la nube al montar ───────
+  // ── SUPABASE: cargar campo al montar ──────────────────────
   useEffect(() => {
     let cancelled = false
-    async function loadFromSupabase() {
-      const data = await loadSettings()
-      if (cancelled || !data?.campo?.[storageKey]) return
+    async function load() {
+      setCargando(true)
+      try {
+        const data = await loadSettings()
+        if (cancelled) return
 
-      setDatos(data.campo[storageKey])
+        if (data?.campo?.[key]) {
+          setDatos(data.campo[key])
+        } else {
+          setDatos(meses.map(mes => ({
+            mes,
+            promedio: '',
+            saldo: '',
+            recibi: '',
+            diferencia: '',
+            aclaracion: ''
+          })))
+        }
+      } finally {
+        if (!cancelled) setCargando(false)
+      }
     }
-    loadFromSupabase()
+    load()
     return () => { cancelled = true }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── SUPABASE: guardar campo con debounce ─────────────────
+  // ── SUPABASE: guardar campo con debounce ──────────────────
   const saveToSupabase = useCallback(async () => {
     const settings = (await loadSettings()) || {}
     if (!settings.campo) settings.campo = {}
-    settings.campo[storageKey] = datos
+    settings.campo[key] = datos
     await saveSettings(settings)
   }, [datos])
 
   useEffect(() => {
+    if (cargando) return
     const timer = setTimeout(() => { saveToSupabase() }, 2000)
     return () => clearTimeout(timer)
-  }, [datos, saveToSupabase])
+  }, [datos, saveToSupabase, cargando])
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
     nuevosDatos[index][campo] = valor
     setDatos(nuevosDatos)
   }
+
+  if (cargando) return <div className="text-center mt-5">Cargando...</div>
 
   return (
     <div className="alquiler-page-container">

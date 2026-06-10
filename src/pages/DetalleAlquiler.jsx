@@ -10,21 +10,10 @@ function DetalleAlquiler() {
   const propiedad = location.state
 
   const meses = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre'
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ]
 
-  // Función para formatear números con separador de miles
   const formatearNumero = (numero) => {
     return new Intl.NumberFormat('es-AR', {
       minimumFractionDigits: 2,
@@ -32,45 +21,23 @@ function DetalleAlquiler() {
     }).format(numero)
   }
 
-  // Detectar si es Puertas del Sol 2
   const esPuertasDelSol = tipo === 'departamentos' && propietario === 'yani' && id === 'puertas-del-sol'
-  
-  // Detectar si es Robles XIV de Fabián
   const esRoblesXIVFabian = tipo === 'departamentos' && propietario === 'fabian' && id === 'robles-xiv-fabian'
 
-  // Storage keys
-  const storageKey = `alquiler-${tipo}-${propietario}-${id}`
-  const storageKeyCochera = `alquiler-${tipo}-${propietario}-${id}-cochera`
-  const storageKeyDepto3C = `alquiler-${tipo}-${propietario}-${id}-depto3c`
-  
-  // Keys de contrato SEPARADOS por tabla
-  const contratoKey = `contrato-${tipo}-${propietario}-${id}-principal`
-  const contratoKeyCochera = `contrato-${tipo}-${propietario}-${id}-cochera`
-  const contratoKeyDepto3C = `contrato-${tipo}-${propietario}-${id}-depto3c`
-  
-  const notasGastosKey = `notas-gastos-${tipo}-${propietario}-${id}`
-  const notasGastosKeyCochera = `notas-gastos-${tipo}-${propietario}-${id}-cochera`
-  const notasGastosKeyDepto3C = `notas-gastos-${tipo}-${propietario}-${id}-depto3c`
-
-  // Keys de bloqueo SEPARADOS por tabla
-  const lockKey = `lock-${tipo}-${propietario}-${id}-principal`
-  const lockKeyCochera = `lock-${tipo}-${propietario}-${id}-cochera`
-  const lockKeyDepto3C = `lock-${tipo}-${propietario}-${id}-depto3c`
-
-  // Departamentos que tienen contrato
   const tieneContrato = () => {
     if (tipo !== 'departamentos') return false
-    
     const deptosConContrato = {
       yani: ['puertas-del-sol', 'robles-viii', 'mares-iii', 'cielos-i'],
       fabian: ['egea-5', 'horenia-ii', 'marconi', 'robles-xiv-fabian', 'libertador-i', 'jeremias']
     }
-    
     return deptosConContrato[propietario]?.includes(id)
   }
 
-  // ── Estado modal ──────────────────────────────────────────────────────────
-  const [modal, setModal] = useState(null) // { tabla: 'principal'|'cochera'|'depto3c', mes: string }
+  // ── Estado cargando ───────────────────────────────────────
+  const [cargando, setCargando] = useState(true)
+
+  // ── Estado modal ──────────────────────────────────────────
+  const [modal, setModal] = useState(null)
   const [modalTexto, setModalTexto] = useState('')
 
   const abrirModal = (tabla, mes, textoActual) => {
@@ -92,237 +59,79 @@ function DetalleAlquiler() {
     setModalTexto('')
   }
 
-  // Cerrar modal con Escape
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') cerrarModal(false) }
     if (modal) window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [modal])
 
-  // Estado para datos del depto principal
-  const [datos, setDatos] = useState(() => {
-    const datosGuardados = localStorage.getItem(storageKey)
-    if (datosGuardados) {
-      return JSON.parse(datosGuardados)
-    }
-    return meses.map(mes => ({
-      mes,
-      alquiler: 0,
-      gastos: 0,
-      comisionAdm: 0
-    }))
-  })
+  // ── Estados vacíos ────────────────────────────────────────
+  const [datos, setDatos] = useState([])
+  const [datosCochera, setDatosCochera] = useState([])
+  const [datosDepto3C, setDatosDepto3C] = useState([])
+  const [contrato, setContrato] = useState('')
+  const [contratoCochera, setContratoCochera] = useState('')
+  const [contratoDepto3C, setContratoDepto3C] = useState('')
+  const [notasGastos, setNotasGastos] = useState({})
+  const [notasGastosCochera, setNotasGastosCochera] = useState({})
+  const [notasGastosDepto3C, setNotasGastosDepto3C] = useState({})
+  const [lockedMeses, setLockedMeses] = useState({})
+  const [lockedMesesCochera, setLockedMesesCochera] = useState({})
+  const [lockedMesesDepto3C, setLockedMesesDepto3C] = useState({})
 
-  // Estado para datos de la cochera (Puertas del Sol)
-  const [datosCochera, setDatosCochera] = useState(() => {
-    if (!esPuertasDelSol) return []
-    
-    const datosGuardados = localStorage.getItem(storageKeyCochera)
-    if (datosGuardados) {
-      return JSON.parse(datosGuardados)
-    }
-    return meses.map(mes => ({
-      mes,
-      alquiler: 0,
-      gastos: 0,
-      comisionAdm: 0
-    }))
-  })
+  // ── Templates de inicialización ───────────────────────────
+  const templateDatos = () => meses.map(mes => ({ mes, alquiler: 0, gastos: 0, comisionAdm: 0 }))
+  const templateNotas = () => meses.reduce((acc, mes) => { acc[mes] = ''; return acc }, {})
+  const templateLock = () => meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
 
-  // Estado para datos del Depto 3C (Robles XIV Fabián)
-  const [datosDepto3C, setDatosDepto3C] = useState(() => {
-    if (!esRoblesXIVFabian) return []
-    
-    const datosGuardados = localStorage.getItem(storageKeyDepto3C)
-    if (datosGuardados) {
-      return JSON.parse(datosGuardados)
-    }
-    return meses.map(mes => ({
-      mes,
-      alquiler: 0,
-      gastos: 0,
-      comisionAdm: 0
-    }))
-  })
-
-  // Estados de contrato SEPARADOS
-  const [contrato, setContrato] = useState(() => {
-    const contratoGuardado = localStorage.getItem(contratoKey)
-    return contratoGuardado || ''
-  })
-
-  const [contratoCochera, setContratoCochera] = useState(() => {
-    if (!esPuertasDelSol) return ''
-    const contratoGuardado = localStorage.getItem(contratoKeyCochera)
-    return contratoGuardado || ''
-  })
-
-  const [contratoDepto3C, setContratoDepto3C] = useState(() => {
-    if (!esRoblesXIVFabian) return ''
-    const contratoGuardado = localStorage.getItem(contratoKeyDepto3C)
-    return contratoGuardado || ''
-  })
-
-  const [notasGastos, setNotasGastos] = useState(() => {
-    const notasGuardadas = localStorage.getItem(notasGastosKey)
-    if (notasGuardadas) {
-      return JSON.parse(notasGuardadas)
-    }
-    return meses.reduce((acc, mes) => {
-      acc[mes] = ''
-      return acc
-    }, {})
-  })
-
-  const [notasGastosCochera, setNotasGastosCochera] = useState(() => {
-    if (!esPuertasDelSol) return {}
-    
-    const notasGuardadas = localStorage.getItem(notasGastosKeyCochera)
-    if (notasGuardadas) {
-      return JSON.parse(notasGuardadas)
-    }
-    return meses.reduce((acc, mes) => {
-      acc[mes] = ''
-      return acc
-    }, {})
-  })
-
-  const [notasGastosDepto3C, setNotasGastosDepto3C] = useState(() => {
-    if (!esRoblesXIVFabian) return {}
-    
-    const notasGuardadas = localStorage.getItem(notasGastosKeyDepto3C)
-    if (notasGuardadas) {
-      return JSON.parse(notasGuardadas)
-    }
-    return meses.reduce((acc, mes) => {
-      acc[mes] = ''
-      return acc
-    }, {})
-  })
-
-  const [notaEditando, setNotaEditando] = useState(null)
-  const [notaEditandoCochera, setNotaEditandoCochera] = useState(null)
-  const [notaEditandoDepto3C, setNotaEditandoDepto3C] = useState(null)
-
-  // Estados de bloqueo SEPARADOS
-  const [lockedMeses, setLockedMeses] = useState(() => {
-    const saved = localStorage.getItem(lockKey)
-    if (saved) return JSON.parse(saved)
-    return meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
-  })
-
-  const [lockedMesesCochera, setLockedMesesCochera] = useState(() => {
-    if (!esPuertasDelSol) return {}
-    const saved = localStorage.getItem(lockKeyCochera)
-    if (saved) return JSON.parse(saved)
-    return meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
-  })
-
-  const [lockedMesesDepto3C, setLockedMesesDepto3C] = useState(() => {
-    if (!esRoblesXIVFabian) return {}
-    const saved = localStorage.getItem(lockKeyDepto3C)
-    if (saved) return JSON.parse(saved)
-    return meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
-  })
-
-  // Guardar datos principales
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(datos))
-  }, [datos, storageKey])
-
-  // Guardar datos cochera
-  useEffect(() => {
-    if (esPuertasDelSol) {
-      localStorage.setItem(storageKeyCochera, JSON.stringify(datosCochera))
-    }
-  }, [datosCochera, storageKeyCochera, esPuertasDelSol])
-
-  // Guardar datos Depto 3C
-  useEffect(() => {
-    if (esRoblesXIVFabian) {
-      localStorage.setItem(storageKeyDepto3C, JSON.stringify(datosDepto3C))
-    }
-  }, [datosDepto3C, storageKeyDepto3C, esRoblesXIVFabian])
-
-  // Guardar contratos SEPARADOS
-  useEffect(() => {
-    if (tieneContrato()) {
-      localStorage.setItem(contratoKey, contrato)
-    }
-  }, [contrato, contratoKey])
-
-  useEffect(() => {
-    if (esPuertasDelSol && tieneContrato()) {
-      localStorage.setItem(contratoKeyCochera, contratoCochera)
-    }
-  }, [contratoCochera, contratoKeyCochera, esPuertasDelSol])
-
-  useEffect(() => {
-    if (esRoblesXIVFabian && tieneContrato()) {
-      localStorage.setItem(contratoKeyDepto3C, contratoDepto3C)
-    }
-  }, [contratoDepto3C, contratoKeyDepto3C, esRoblesXIVFabian])
-
-  useEffect(() => {
-    localStorage.setItem(notasGastosKey, JSON.stringify(notasGastos))
-  }, [notasGastos, notasGastosKey])
-
-  useEffect(() => {
-    if (esPuertasDelSol) {
-      localStorage.setItem(notasGastosKeyCochera, JSON.stringify(notasGastosCochera))
-    }
-  }, [notasGastosCochera, notasGastosKeyCochera, esPuertasDelSol])
-
-  useEffect(() => {
-    if (esRoblesXIVFabian) {
-      localStorage.setItem(notasGastosKeyDepto3C, JSON.stringify(notasGastosDepto3C))
-    }
-  }, [notasGastosDepto3C, notasGastosKeyDepto3C, esRoblesXIVFabian])
-
-  // Guardar estados de bloqueo
-  useEffect(() => {
-    localStorage.setItem(lockKey, JSON.stringify(lockedMeses))
-  }, [lockedMeses, lockKey])
-
-  useEffect(() => {
-    if (esPuertasDelSol) {
-      localStorage.setItem(lockKeyCochera, JSON.stringify(lockedMesesCochera))
-    }
-  }, [lockedMesesCochera, lockKeyCochera, esPuertasDelSol])
-
-  useEffect(() => {
-    if (esRoblesXIVFabian) {
-      localStorage.setItem(lockKeyDepto3C, JSON.stringify(lockedMesesDepto3C))
-    }
-  }, [lockedMesesDepto3C, lockKeyDepto3C, esRoblesXIVFabian])
-
-  // ── SUPABASE: cargar datos desde la nube al montar ────────
+  // ── SUPABASE: cargar datos al montar ──────────────────────
   useEffect(() => {
     let cancelled = false
-    async function loadFromSupabase() {
-      const data = await loadProperty(tipo, propietario, id)
-      if (cancelled || !data) return
+    async function load() {
+      setCargando(true)
+      try {
+        const data = await loadProperty(tipo, propietario, id)
+        if (cancelled) return
 
-      if (data.principal) setDatos(data.principal)
-      if (data.contrato_principal !== undefined && data.contrato_principal !== null) setContrato(data.contrato_principal)
-      if (data.notas_principal) setNotasGastos(data.notas_principal)
-      if (data.lock_principal) setLockedMeses(data.lock_principal)
+        if (data) {
+          setDatos(data.principal || templateDatos())
+          setContrato(data.contrato_principal ?? '')
+          setNotasGastos(data.notas_principal || templateNotas())
+          setLockedMeses(data.lock_principal || templateLock())
 
-      if (esPuertasDelSol) {
-        if (data.cochera) setDatosCochera(data.cochera)
-        if (data.contrato_cochera !== undefined && data.contrato_cochera !== null) setContratoCochera(data.contrato_cochera)
-        if (data.notas_cochera) setNotasGastosCochera(data.notas_cochera)
-        if (data.lock_cochera) setLockedMesesCochera(data.lock_cochera)
-      }
+          if (esPuertasDelSol) {
+            setDatosCochera(data.cochera || templateDatos())
+            setContratoCochera(data.contrato_cochera ?? '')
+            setNotasGastosCochera(data.notas_cochera || templateNotas())
+            setLockedMesesCochera(data.lock_cochera || templateLock())
+          }
 
-      if (esRoblesXIVFabian) {
-        if (data.depto3c) setDatosDepto3C(data.depto3c)
-        if (data.contrato_depto3c !== undefined && data.contrato_depto3c !== null) setContratoDepto3C(data.contrato_depto3c)
-        if (data.notas_depto3c) setNotasGastosDepto3C(data.notas_depto3c)
-        if (data.lock_depto3c) setLockedMesesDepto3C(data.lock_depto3c)
+          if (esRoblesXIVFabian) {
+            setDatosDepto3C(data.depto3c || templateDatos())
+            setContratoDepto3C(data.contrato_depto3c ?? '')
+            setNotasGastosDepto3C(data.notas_depto3c || templateNotas())
+            setLockedMesesDepto3C(data.lock_depto3c || templateLock())
+          }
+        } else {
+          setDatos(templateDatos())
+          setNotasGastos(templateNotas())
+          setLockedMeses(templateLock())
+          if (esPuertasDelSol) {
+            setDatosCochera(templateDatos())
+            setNotasGastosCochera(templateNotas())
+            setLockedMesesCochera(templateLock())
+          }
+          if (esRoblesXIVFabian) {
+            setDatosDepto3C(templateDatos())
+            setNotasGastosDepto3C(templateNotas())
+            setLockedMesesDepto3C(templateLock())
+          }
+        }
+      } finally {
+        if (!cancelled) setCargando(false)
       }
     }
-    loadFromSupabase()
+    load()
     return () => { cancelled = true }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -353,12 +162,13 @@ function DetalleAlquiler() {
       esPuertasDelSol, esRoblesXIVFabian, tipo, propietario, id])
 
   useEffect(() => {
+    if (cargando) return
     const timer = setTimeout(() => { saveToSupabase() }, 2000)
     return () => clearTimeout(timer)
   }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
       notasGastos, notasGastosCochera, notasGastosDepto3C,
       lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
-      esPuertasDelSol, esRoblesXIVFabian, saveToSupabase])
+      esPuertasDelSol, esRoblesXIVFabian, saveToSupabase, cargando])
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
@@ -378,38 +188,9 @@ function DetalleAlquiler() {
     setDatosDepto3C(nuevosDatos)
   }
 
-  const handleContratoChange = (e) => {
-    setContrato(e.target.value)
-  }
-
-  const handleContratoCocheraChange = (e) => {
-    setContratoCochera(e.target.value)
-  }
-
-  const handleContratoDepto3CChange = (e) => {
-    setContratoDepto3C(e.target.value)
-  }
-
-  const handleNotaGastoChange = (mes, valor) => {
-    setNotasGastos(prev => ({
-      ...prev,
-      [mes]: valor
-    }))
-  }
-
-  const handleNotaGastoChangeCochera = (mes, valor) => {
-    setNotasGastosCochera(prev => ({
-      ...prev,
-      [mes]: valor
-    }))
-  }
-
-  const handleNotaGastoChangeDepto3C = (mes, valor) => {
-    setNotasGastosDepto3C(prev => ({
-      ...prev,
-      [mes]: valor
-    }))
-  }
+  const handleContratoChange = (e) => setContrato(e.target.value)
+  const handleContratoCocheraChange = (e) => setContratoCochera(e.target.value)
+  const handleContratoDepto3CChange = (e) => setContratoDepto3C(e.target.value)
 
   const toggleLock = (tabla, mes) => {
     if (tabla === 'principal') {
@@ -427,6 +208,8 @@ function DetalleAlquiler() {
 
   const tituloTipo = tipo === 'departamentos' ? 'Departamento' : 'Casa'
   const tituloPropietario = propietario === 'yani' ? 'Yani' : 'Fabián'
+
+  if (cargando) return <div className="text-center mt-5">Cargando...</div>
 
   return (
     <div className="alquiler-page-container">
@@ -545,7 +328,6 @@ function DetalleAlquiler() {
             </div>
           </div>
         ) : (
-          // Tabla principal SIN CONTRATO para otros departamentos
           <div className="alquiler-table-wrapper">
             <h3 className="subtitulo-tabla">Año 2026</h3>
             <table className="table table-bordered alquiler-table-excel">
@@ -638,7 +420,7 @@ function DetalleAlquiler() {
           </div>
         )}
 
-        {/* Tabla de cochera solo para Puertas del Sol - CON CONTRATO PROPIO AL LADO */}
+        {/* Tabla cochera - Puertas del Sol */}
         {esPuertasDelSol && (
           <div className="alquiler-content-wrapper">
             <div className="alquiler-table-section">
@@ -747,7 +529,7 @@ function DetalleAlquiler() {
           </div>
         )}
 
-        {/* Tabla de Depto 3C solo para Robles XIV Fabián - CON CONTRATO PROPIO AL LADO */}
+        {/* Tabla Depto 3C - Robles XIV Fabián */}
         {esRoblesXIVFabian && (
           <div className="alquiler-content-wrapper">
             <div className="alquiler-table-section">
@@ -864,7 +646,7 @@ function DetalleAlquiler() {
         Volver
       </button>
 
-      {/* ── MODAL DETALLE ────────────────────────────────────────────────── */}
+      {/* ── MODAL DETALLE ────────────────────────────────────── */}
       {modal && (
         <div className="detalle-modal-overlay" onClick={() => cerrarModal(false)}>
           <div className="detalle-modal" onClick={(e) => e.stopPropagation()}>
@@ -890,7 +672,6 @@ function DetalleAlquiler() {
           </div>
         </div>
       )}
-
     </div>
   )
 }
