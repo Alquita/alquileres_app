@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import MigrateButton from '../components/MigrateButton'
 import { loadSettings, saveSettings } from '../services/syncService'
 
 function Campo() {
@@ -69,16 +68,6 @@ function Campo() {
     const timer = setTimeout(() => { saveToSupabase() }, 2000)
     return () => clearTimeout(timer)
   }, [datos, saveToSupabase])
-
-  const handleMigrate = async () => {
-    const saved = localStorage.getItem(storageKey)
-    if (!saved) return false
-
-    const settings = (await loadSettings()) || {}
-    if (!settings.campo) settings.campo = {}
-    settings.campo[storageKey] = JSON.parse(saved)
-    return await saveSettings(settings)
-  }
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
@@ -157,15 +146,12 @@ function Campo() {
         </table>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate('/alquileres/seleccion')}
-        >
-          Volver
-        </button>
-        <MigrateButton onMigrate={handleMigrate} label="Subir campo" />
-      </div>
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate('/alquileres/seleccion')}
+      >
+        Volver
+      </button>
     </div>
   )
 }

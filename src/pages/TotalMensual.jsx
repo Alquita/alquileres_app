@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import MigrateButton from '../components/MigrateButton'
-import { loadSettings, saveSettings, migrateSettingsFromLocalStorage } from '../services/syncService'
+import { loadSettings, saveSettings } from '../services/syncService'
 
 function TotalMensual() {
   const navigate = useNavigate()
@@ -115,10 +114,6 @@ function TotalMensual() {
     const timer = setTimeout(() => { saveToSupabase() }, 2000)
     return () => clearTimeout(timer)
   }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones, saveToSupabase])
-
-  const handleMigrate = async () => {
-    return await migrateSettingsFromLocalStorage()
-  }
 
   const handleCondicionTexto = (index, valor) => {
     const nuevas = [...condiciones]
@@ -301,15 +296,12 @@ function TotalMensual() {
         </table>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate('/alquileres/seleccion')}
-        >
-          Volver
-        </button>
-        <MigrateButton onMigrate={handleMigrate} label="Subir condiciones" />
-      </div>
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate('/alquileres/seleccion')}
+      >
+        Volver
+      </button>
     </div>
   )
 }

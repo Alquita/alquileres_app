@@ -1,7 +1,6 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import MigrateButton from '../components/MigrateButton'
-import { loadProperty, saveProperty, migratePropertyFromLocalStorage } from '../services/syncService'
+import { loadProperty, saveProperty } from '../services/syncService'
 
 function DetalleAlquiler() {
   const { tipo, propietario, id } = useParams()
@@ -360,10 +359,6 @@ function DetalleAlquiler() {
       notasGastos, notasGastosCochera, notasGastosDepto3C,
       lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
       esPuertasDelSol, esRoblesXIVFabian, saveToSupabase])
-
-  const handleMigrate = async () => {
-    return await migratePropertyFromLocalStorage(tipo, propietario, id)
-  }
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
@@ -862,15 +857,12 @@ function DetalleAlquiler() {
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate(`/alquileres/${tipo}/${propietario}`)}
-        >
-          Volver
-        </button>
-        <MigrateButton onMigrate={handleMigrate} />
-      </div>
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate(`/alquileres/${tipo}/${propietario}`)}
+      >
+        Volver
+      </button>
 
       {/* ── MODAL DETALLE ────────────────────────────────────────────────── */}
       {modal && (
