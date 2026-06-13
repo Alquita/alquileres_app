@@ -1,8 +1,7 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import toast from 'react-hot-toast'
 import { loadProperty, saveProperty } from '../services/syncService'
-import { reproducirSonido } from '../utils/sonido'
+import { descartarToast } from '../utils/notificaciones'
 
 function DetalleAlquiler() {
   const { tipo, propietario, id } = useParams()
@@ -198,6 +197,31 @@ function DetalleAlquiler() {
       data.notas_depto3c = notasGastosDepto3C
       data.lock_depto3c = lockedMesesDepto3C
     }
+    // ── Si algún contrato fue renovado, descartar su toast ──
+    const ahora = new Date()
+    const fechaPpal = unirFecha(anio, mes, dia)
+    if (fechaPpal) {
+      const venc = new Date(fechaPpal)
+      venc.setMonth(venc.getMonth() + periodoMeses)
+      if (ahora <= venc) descartarToast(id)
+    }
+    if (esPuertasDelSol) {
+      const fechaCochera = unirFecha(anioCochera, mesCochera, diaCochera)
+      if (fechaCochera) {
+        const venc = new Date(fechaCochera)
+        venc.setMonth(venc.getMonth() + periodoMesesCochera)
+        if (ahora <= venc) descartarToast(`${id}-cochera`)
+      }
+    }
+    if (esRoblesXIVFabian) {
+      const fechaDepto3C = unirFecha(anioDepto3C, mesDepto3C, diaDepto3C)
+      if (fechaDepto3C) {
+        const venc = new Date(fechaDepto3C)
+        venc.setMonth(venc.getMonth() + periodoMesesDepto3C)
+        if (ahora <= venc) descartarToast(`${id}-depto3c`)
+      }
+    }
+
     await saveProperty(tipo, propietario, id, data)
   }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
       notasGastos, notasGastosCochera, notasGastosDepto3C,
@@ -220,18 +244,7 @@ function DetalleAlquiler() {
       esPuertasDelSol, esRoblesXIVFabian, saveToSupabase, cargando])
 
   // ── Toast de vencimiento de contrato ───────────────────────
-  useEffect(() => {
-    if (cargando) return
-    const nombre = propiedad?.nombre || tituloTipo
-    const unirFecha = (a, m, d) => a && m && d ? `${a}-${m}-${d}` : ''
-    verificarVencimiento(unirFecha(anio, mes, dia), periodoMeses, `${nombre} (principal)`)
-    if (esPuertasDelSol) {
-      verificarVencimiento(unirFecha(anioCochera, mesCochera, diaCochera), periodoMesesCochera, `${nombre} (cochera)`)
-    }
-    if (esRoblesXIVFabian) {
-      verificarVencimiento(unirFecha(anioDepto3C, mesDepto3C, diaDepto3C), periodoMesesDepto3C, `${nombre} (Depto 3C)`)
-    }
-  }, [cargando])
+  // (el toast global persistente en ContratoChecker maneja las notificaciones)
 
   const handleInputChange = (index, campo, valor) => {
     const nuevosDatos = [...datos]
@@ -254,20 +267,6 @@ function DetalleAlquiler() {
   const handleContratoChange = (e) => setContrato(e.target.value)
   const handleContratoCocheraChange = (e) => setContratoCochera(e.target.value)
   const handleContratoDepto3CChange = (e) => setContratoDepto3C(e.target.value)
-
-  const verificarVencimiento = (ultima, periodo, nombre) => {
-    if (!ultima || !periodo) return
-    const ultimaDate = new Date(ultima)
-    const vencimiento = new Date(ultimaDate)
-    vencimiento.setMonth(vencimiento.getMonth() + periodo)
-    if (new Date() > vencimiento) {
-      reproducirSonido()
-      toast(
-        `⚠️ ${nombre} necesita actualización (venció el ${vencimiento.toLocaleDateString('es-AR')})`,
-        { duration: 10000 }
-      )
-    }
-  }
 
   const toggleLock = (tabla, mes) => {
     if (tabla === 'principal') {

@@ -13,12 +13,14 @@ import DetalleAlquiler from './pages/DetalleAlquiler'
 import TotalMensual from './pages/TotalMensual'
 import Campo from './pages/Campo'
 import ContratoChecker from './pages/ContratoChecker'
+import PwaUpdater from './pages/PwaUpdater'
 
 function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" toastOptions={{ duration: 6000 }} />
       <ContratoChecker />
+      <PwaUpdater />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/info" element={<Info />} />

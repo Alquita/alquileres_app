@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { loadProperty } from '../services/syncService'
 import { reproducirSonido } from '../utils/sonido'
+import { guardarToastId } from '../utils/notificaciones'
 
 const propiedades = [
   { tipo: 'departamentos', propietario: 'yani', id: 'puertas-del-sol', nombre: 'Puertas del Sol 2' },
@@ -68,15 +69,16 @@ function ContratoChecker() {
         if (new Date() > venc) {
           notificados.current.add(key)
           reproducirSonido()
-          toast(
+          const toastId = toast(
             <span
               onClick={() => navigate(`/alquileres/${tipo}/${propietario}/${id}`)}
               style={{ cursor: 'pointer', display: 'block' }}
             >
               ⚠️ {label} necesita actualización (venció el {venc.toLocaleDateString('es-AR')})
             </span>,
-            { duration: 10000 }
+            { duration: Infinity }
           )
+          guardarToastId(key, toastId)
         }
       }
 
