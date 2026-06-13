@@ -12,11 +12,13 @@ import ListaAlquileres from './pages/ListaAlquileres'
 import DetalleAlquiler from './pages/DetalleAlquiler'
 import TotalMensual from './pages/TotalMensual'
 import Campo from './pages/Campo'
+import ContratoChecker from './pages/ContratoChecker'
 
 function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" toastOptions={{ duration: 6000 }} />
+      <ContratoChecker />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/info" element={<Info />} />

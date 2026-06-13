@@ -2,6 +2,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { loadProperty, saveProperty } from '../services/syncService'
+import { reproducirSonido } from '../utils/sonido'
 
 function DetalleAlquiler() {
   const { tipo, propietario, id } = useParams()
@@ -81,12 +82,23 @@ function DetalleAlquiler() {
   const [lockedMesesDepto3C, setLockedMesesDepto3C] = useState({})
 
   // ── Estados de fechas de contratos ─────────────────────────
-  const [ultimaActualizacion, setUltimaActualizacion] = useState('')
+  const [dia, setDia] = useState('')
+  const [mes, setMes] = useState('')
+  const [anio, setAnio] = useState('')
   const [periodoMeses, setPeriodoMeses] = useState(3)
-  const [ultimaActualizacionCochera, setUltimaActualizacionCochera] = useState('')
+  const [diaCochera, setDiaCochera] = useState('')
+  const [mesCochera, setMesCochera] = useState('')
+  const [anioCochera, setAnioCochera] = useState('')
   const [periodoMesesCochera, setPeriodoMesesCochera] = useState(3)
-  const [ultimaActualizacionDepto3C, setUltimaActualizacionDepto3C] = useState('')
+  const [diaDepto3C, setDiaDepto3C] = useState('')
+  const [mesDepto3C, setMesDepto3C] = useState('')
+  const [anioDepto3C, setAnioDepto3C] = useState('')
   const [periodoMesesDepto3C, setPeriodoMesesDepto3C] = useState(3)
+
+  const nombresMeses = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ]
 
   // ── Templates de inicialización ───────────────────────────
   const templateDatos = () => meses.map(mes => ({ mes, alquiler: 0, gastos: 0, comisionAdm: 0 }))
@@ -107,7 +119,10 @@ function DetalleAlquiler() {
           setContrato(data.contrato_principal ?? '')
           setNotasGastos(data.notas_principal || templateNotas())
           setLockedMeses(data.lock_principal || templateLock())
-          setUltimaActualizacion(data.contrato_ultima_actualizacion ?? '')
+          const partes = (data.contrato_ultima_actualizacion || '').split('-')
+          setAnio(partes[0] || '')
+          setMes(partes[1] || '')
+          setDia(partes[2] || '')
           setPeriodoMeses(data.contrato_periodo ?? 3)
 
           if (esPuertasDelSol) {
@@ -115,7 +130,10 @@ function DetalleAlquiler() {
             setContratoCochera(data.contrato_cochera ?? '')
             setNotasGastosCochera(data.notas_cochera || templateNotas())
             setLockedMesesCochera(data.lock_cochera || templateLock())
-            setUltimaActualizacionCochera(data.contrato_ultima_actualizacion_cochera ?? '')
+            const partesC = (data.contrato_ultima_actualizacion_cochera || '').split('-')
+            setAnioCochera(partesC[0] || '')
+            setMesCochera(partesC[1] || '')
+            setDiaCochera(partesC[2] || '')
             setPeriodoMesesCochera(data.contrato_periodo_cochera ?? 3)
           }
 
@@ -124,7 +142,10 @@ function DetalleAlquiler() {
             setContratoDepto3C(data.contrato_depto3c ?? '')
             setNotasGastosDepto3C(data.notas_depto3c || templateNotas())
             setLockedMesesDepto3C(data.lock_depto3c || templateLock())
-            setUltimaActualizacionDepto3C(data.contrato_ultima_actualizacion_depto3c ?? '')
+            const partesD = (data.contrato_ultima_actualizacion_depto3c || '').split('-')
+            setAnioDepto3C(partesD[0] || '')
+            setMesDepto3C(partesD[1] || '')
+            setDiaDepto3C(partesD[2] || '')
             setPeriodoMesesDepto3C(data.contrato_periodo_depto3c ?? 3)
           }
         } else {
@@ -152,10 +173,11 @@ function DetalleAlquiler() {
 
   // ── SUPABASE: guardar cambios con debounce ────────────────
   const saveToSupabase = useCallback(async () => {
+    const unirFecha = (a, m, d) => a && m && d ? `${a}-${m}-${d}` : ''
     const data = {
       principal: datos,
       contrato_principal: contrato,
-      contrato_ultima_actualizacion: ultimaActualizacion,
+      contrato_ultima_actualizacion: unirFecha(anio, mes, dia),
       contrato_periodo: periodoMeses,
       notas_principal: notasGastos,
       lock_principal: lockedMeses
@@ -163,7 +185,7 @@ function DetalleAlquiler() {
     if (esPuertasDelSol) {
       data.cochera = datosCochera
       data.contrato_cochera = contratoCochera
-      data.contrato_ultima_actualizacion_cochera = ultimaActualizacionCochera
+      data.contrato_ultima_actualizacion_cochera = unirFecha(anioCochera, mesCochera, diaCochera)
       data.contrato_periodo_cochera = periodoMesesCochera
       data.notas_cochera = notasGastosCochera
       data.lock_cochera = lockedMesesCochera
@@ -171,7 +193,7 @@ function DetalleAlquiler() {
     if (esRoblesXIVFabian) {
       data.depto3c = datosDepto3C
       data.contrato_depto3c = contratoDepto3C
-      data.contrato_ultima_actualizacion_depto3c = ultimaActualizacionDepto3C
+      data.contrato_ultima_actualizacion_depto3c = unirFecha(anioDepto3C, mesDepto3C, diaDepto3C)
       data.contrato_periodo_depto3c = periodoMesesDepto3C
       data.notas_depto3c = notasGastosDepto3C
       data.lock_depto3c = lockedMesesDepto3C
@@ -180,9 +202,9 @@ function DetalleAlquiler() {
   }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
       notasGastos, notasGastosCochera, notasGastosDepto3C,
       lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
-      ultimaActualizacion, periodoMeses,
-      ultimaActualizacionCochera, periodoMesesCochera,
-      ultimaActualizacionDepto3C, periodoMesesDepto3C,
+      dia, mes, anio, periodoMeses,
+      diaCochera, mesCochera, anioCochera, periodoMesesCochera,
+      diaDepto3C, mesDepto3C, anioDepto3C, periodoMesesDepto3C,
       esPuertasDelSol, esRoblesXIVFabian, tipo, propietario, id])
 
   useEffect(() => {
@@ -192,21 +214,22 @@ function DetalleAlquiler() {
   }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
       notasGastos, notasGastosCochera, notasGastosDepto3C,
       lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
-      ultimaActualizacion, periodoMeses,
-      ultimaActualizacionCochera, periodoMesesCochera,
-      ultimaActualizacionDepto3C, periodoMesesDepto3C,
+      dia, mes, anio, periodoMeses,
+      diaCochera, mesCochera, anioCochera, periodoMesesCochera,
+      diaDepto3C, mesDepto3C, anioDepto3C, periodoMesesDepto3C,
       esPuertasDelSol, esRoblesXIVFabian, saveToSupabase, cargando])
 
   // ── Toast de vencimiento de contrato ───────────────────────
   useEffect(() => {
     if (cargando) return
     const nombre = propiedad?.nombre || tituloTipo
-    verificarVencimiento(ultimaActualizacion, periodoMeses, `${nombre} (principal)`)
+    const unirFecha = (a, m, d) => a && m && d ? `${a}-${m}-${d}` : ''
+    verificarVencimiento(unirFecha(anio, mes, dia), periodoMeses, `${nombre} (principal)`)
     if (esPuertasDelSol) {
-      verificarVencimiento(ultimaActualizacionCochera, periodoMesesCochera, `${nombre} (cochera)`)
+      verificarVencimiento(unirFecha(anioCochera, mesCochera, diaCochera), periodoMesesCochera, `${nombre} (cochera)`)
     }
     if (esRoblesXIVFabian) {
-      verificarVencimiento(ultimaActualizacionDepto3C, periodoMesesDepto3C, `${nombre} (Depto 3C)`)
+      verificarVencimiento(unirFecha(anioDepto3C, mesDepto3C, diaDepto3C), periodoMesesDepto3C, `${nombre} (Depto 3C)`)
     }
   }, [cargando])
 
@@ -238,6 +261,7 @@ function DetalleAlquiler() {
     const vencimiento = new Date(ultimaDate)
     vencimiento.setMonth(vencimiento.getMonth() + periodo)
     if (new Date() > vencimiento) {
+      reproducirSonido()
       toast(
         `⚠️ ${nombre} necesita actualización (venció el ${vencimiento.toLocaleDateString('es-AR')})`,
         { duration: 10000 }
@@ -381,12 +405,38 @@ function DetalleAlquiler() {
               <div className="contrato-fechas">
                 <label className="contrato-fecha-label">
                   Última actualización
-                  <input
-                    type="date"
-                    className="contrato-date-input"
-                    value={ultimaActualizacion}
-                    onChange={(e) => setUltimaActualizacion(e.target.value)}
-                  />
+                  <div className="contrato-date-wrapper">
+                    <label className="contrato-select-group">
+                      Día
+                      <select value={dia} onChange={(e) => setDia(e.target.value)}>
+                        <option value="">Día</option>
+                        {Array.from({ length: 31 }, (_, i) => {
+                          const val = String(i + 1).padStart(2, '0')
+                          return <option key={val} value={val}>{val}</option>
+                        })}
+                      </select>
+                    </label>
+                    <label className="contrato-select-group">
+                      Mes
+                      <select value={mes} onChange={(e) => setMes(e.target.value)}>
+                        <option value="">Mes</option>
+                        {nombresMeses.map((nom, i) => {
+                          const val = String(i + 1).padStart(2, '0')
+                          return <option key={val} value={val}>{nom}</option>
+                        })}
+                      </select>
+                    </label>
+                    <label className="contrato-select-group">
+                      Año
+                      <select value={anio} onChange={(e) => setAnio(e.target.value)}>
+                        <option value="">Año</option>
+                        {Array.from({ length: 15 }, (_, i) => {
+                          const val = String(2020 + i)
+                          return <option key={val} value={val}>{val}</option>
+                        })}
+                      </select>
+                    </label>
+                  </div>
                 </label>
                 <label className="contrato-fecha-label">
                   Actualizar cada
@@ -606,12 +656,38 @@ function DetalleAlquiler() {
               <div className="contrato-fechas">
                 <label className="contrato-fecha-label">
                   Última actualización
-                  <input
-                    type="date"
-                    className="contrato-date-input"
-                    value={ultimaActualizacionCochera}
-                    onChange={(e) => setUltimaActualizacionCochera(e.target.value)}
-                  />
+                  <div className="contrato-date-wrapper">
+                    <label className="contrato-select-group">
+                      Día
+                      <select value={diaCochera} onChange={(e) => setDiaCochera(e.target.value)}>
+                        <option value="">Día</option>
+                        {Array.from({ length: 31 }, (_, i) => {
+                          const val = String(i + 1).padStart(2, '0')
+                          return <option key={val} value={val}>{val}</option>
+                        })}
+                      </select>
+                    </label>
+                    <label className="contrato-select-group">
+                      Mes
+                      <select value={mesCochera} onChange={(e) => setMesCochera(e.target.value)}>
+                        <option value="">Mes</option>
+                        {nombresMeses.map((nom, i) => {
+                          const val = String(i + 1).padStart(2, '0')
+                          return <option key={val} value={val}>{nom}</option>
+                        })}
+                      </select>
+                    </label>
+                    <label className="contrato-select-group">
+                      Año
+                      <select value={anioCochera} onChange={(e) => setAnioCochera(e.target.value)}>
+                        <option value="">Año</option>
+                        {Array.from({ length: 15 }, (_, i) => {
+                          const val = String(2020 + i)
+                          return <option key={val} value={val}>{val}</option>
+                        })}
+                      </select>
+                    </label>
+                  </div>
                 </label>
                 <label className="contrato-fecha-label">
                   Actualizar cada
@@ -740,12 +816,38 @@ function DetalleAlquiler() {
               <div className="contrato-fechas">
                 <label className="contrato-fecha-label">
                   Última actualización
-                  <input
-                    type="date"
-                    className="contrato-date-input"
-                    value={ultimaActualizacionDepto3C}
-                    onChange={(e) => setUltimaActualizacionDepto3C(e.target.value)}
-                  />
+                  <div className="contrato-date-wrapper">
+                    <label className="contrato-select-group">
+                      Día
+                      <select value={diaDepto3C} onChange={(e) => setDiaDepto3C(e.target.value)}>
+                        <option value="">Día</option>
+                        {Array.from({ length: 31 }, (_, i) => {
+                          const val = String(i + 1).padStart(2, '0')
+                          return <option key={val} value={val}>{val}</option>
+                        })}
+                      </select>
+                    </label>
+                    <label className="contrato-select-group">
+                      Mes
+                      <select value={mesDepto3C} onChange={(e) => setMesDepto3C(e.target.value)}>
+                        <option value="">Mes</option>
+                        {nombresMeses.map((nom, i) => {
+                          const val = String(i + 1).padStart(2, '0')
+                          return <option key={val} value={val}>{nom}</option>
+                        })}
+                      </select>
+                    </label>
+                    <label className="contrato-select-group">
+                      Año
+                      <select value={anioDepto3C} onChange={(e) => setAnioDepto3C(e.target.value)}>
+                        <option value="">Año</option>
+                        {Array.from({ length: 15 }, (_, i) => {
+                          const val = String(2020 + i)
+                          return <option key={val} value={val}>{val}</option>
+                        })}
+                      </select>
+                    </label>
+                  </div>
                 </label>
                 <label className="contrato-fecha-label">
                   Actualizar cada

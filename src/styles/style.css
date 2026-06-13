@@ -1542,7 +1542,6 @@ transform: scale(1.01);
   min-width: 140px;
 }
 
-.contrato-date-input,
 .contrato-select {
   padding: 0.5rem 0.75rem;
   border: 2px solid #e9ecef;
@@ -1554,8 +1553,44 @@ transform: scale(1.01);
   font-family: inherit;
 }
 
-.contrato-date-input:focus,
 .contrato-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  background-color: #ffffff;
+}
+
+.contrato-date-wrapper {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-end;
+}
+
+.contrato-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6c757d;
+  flex: 1;
+  min-width: 0;
+}
+
+.contrato-select-group select {
+  width: 100%;
+  padding: 0.45rem 0.4rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #212529;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.contrato-select-group select:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
