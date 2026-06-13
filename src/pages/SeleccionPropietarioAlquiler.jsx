@@ -10,35 +10,37 @@ function SeleccionPropietarioAlquiler() {
     <div className="info-container">
       <h2 className="info-title">Seleccionar Propietario - {titulo}</h2>
 
-      <table className="table info-table text-center align-middle">
-        <thead>
-          <tr>
-            <th>Propietario</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <Link
-                to={`/alquileres/${tipo}/yani`}
-                className="info-link"
-              >
-                YANI
-              </Link>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <Link
-                to={`/alquileres/${tipo}/fabian`}
-                className="info-link"
-              >
-                FABIÁN
-              </Link>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="info-table-wrapper">
+        <table className="table info-table text-center align-middle">
+          <thead>
+            <tr>
+              <th>Propietario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <Link
+                  to={`/alquileres/${tipo}/yani`}
+                  className="info-link"
+                >
+                  YANI
+                </Link>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Link
+                  to={`/alquileres/${tipo}/fabian`}
+                  className="info-link"
+                >
+                  FABIÁN
+                </Link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <button
         className="btn btn-secondary mt-4"

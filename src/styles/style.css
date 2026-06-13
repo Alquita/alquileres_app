@@ -237,33 +237,15 @@
   font-weight: 600;
   color: #667eea;
   transition: all 0.3s ease;
-  display: inline-block;
-  word-wrap: break-word;
-  max-width: 100%;
-  position: relative;
-  padding: 0.3rem 0;
-}
-
-.info-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-}
-
-.info-link:hover {
-  color: #764ba2;
-  transform: translateY(-2px);
-  text-decoration: none;
-}
-
-.info-link:hover::after {
+  display: block;
   width: 100%;
+  word-wrap: break-word;
+  position: relative;
+  padding: 0.8rem 0.5rem;
+}
+
+.info-table tbody tr:hover .info-link {
+  transform: translateY(-2px);
 }
 
 /* Estilos para la tabla de departamentos con 4 columnas */

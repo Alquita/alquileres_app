@@ -51,28 +51,30 @@ function ListaAlquileres() {
     <div className="info-container">
       <h2 className="info-title">Alquileres - {tituloTipo} de {tituloPropietario}</h2>
 
-      <table className="table info-table text-center align-middle">
-        <thead>
-          <tr>
-            <th>{tituloPropietario}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {propiedades.map((propiedad) => (
-            <tr key={propiedad.id}>
-              <td>
-                <Link
-                  to={`/alquileres/${tipo}/${propietario}/${propiedad.id}`}
-                  state={{ nombre: propiedad.nombre }}
-                  className="info-link"
-                >
-                  {propiedad.nombre}
-                </Link>
-              </td>
+      <div className="info-table-wrapper">
+        <table className="table info-table text-center align-middle">
+          <thead>
+            <tr>
+              <th>{tituloPropietario}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {propiedades.map((propiedad) => (
+              <tr key={propiedad.id}>
+                <td>
+                  <Link
+                    to={`/alquileres/${tipo}/${propietario}/${propiedad.id}`}
+                    state={{ nombre: propiedad.nombre }}
+                    className="info-link"
+                  >
+                    {propiedad.nombre}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <button
         className="btn btn-secondary mt-4"

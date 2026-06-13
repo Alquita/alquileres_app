@@ -170,28 +170,30 @@ function Departamentos() {
     <div className="info-container">
       <h2 className="info-title">Departamentos de {tituloCategoria}</h2>
 
-      <table className="table info-table text-center align-middle">
-        <thead>
-          <tr>
-            <th>{tituloCategoria}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {deptosAMostrar.map((depto) => (
-            <tr key={depto.id}>
-              <td>
-                <Link
-                  to={`/depto/${personaActual}/${depto.id}`}
-                  state={getDeptoCompleto(depto.id, personaActual)}
-                  className="info-link"
-                >
-                  {depto.nombre}
-                </Link>
-              </td>
+      <div className="info-table-wrapper">
+        <table className="table info-table text-center align-middle">
+          <thead>
+            <tr>
+              <th>{tituloCategoria}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {deptosAMostrar.map((depto) => (
+              <tr key={depto.id}>
+                <td>
+                  <Link
+                    to={`/depto/${personaActual}/${depto.id}`}
+                    state={getDeptoCompleto(depto.id, personaActual)}
+                    className="info-link"
+                  >
+                    {depto.nombre}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <button
         className="btn btn-secondary mt-4"

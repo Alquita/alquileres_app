@@ -7,35 +7,37 @@ function SeleccionDepartamentos() {
     <div className="info-container">
       <h2 className="info-title">Seleccionar Categoría</h2>
 
-      <table className="table info-table text-center align-middle">
-        <thead>
-          <tr>
-            <th>Categoría de Departamentos</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <Link
-                to="/departamentos/yani"
-                className="info-link"
-              >
-                DEPARTAMENTOS YANI
-              </Link>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <Link
-                to="/departamentos/fabian"
-                className="info-link"
-              >
-                DEPARTAMENTOS FABIAN
-              </Link>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="info-table-wrapper">
+        <table className="table info-table text-center align-middle">
+          <thead>
+            <tr>
+              <th>Categoría de Departamentos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <Link
+                  to="/departamentos/yani"
+                  className="info-link"
+                >
+                  DEPARTAMENTOS YANI
+                </Link>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Link
+                  to="/departamentos/fabian"
+                  className="info-link"
+                >
+                  DEPARTAMENTOS FABIAN
+                </Link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <button
         className="btn btn-secondary mt-4"
