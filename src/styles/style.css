@@ -84,6 +84,7 @@
 .info-container::after {
   content: '';
   position: absolute;
+  pointer-events: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   animation: float 20s infinite ease-in-out;
@@ -346,6 +347,7 @@
 .depto-container::after {
   content: '';
   position: absolute;
+  pointer-events: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   animation: float 20s infinite ease-in-out;
@@ -1018,11 +1020,12 @@ position: relative;
 /* Efecto de partículas flotantes */
 .alquiler-page-container::before,
 .alquiler-page-container::after {
-content: '';
-position: absolute;
-border-radius: 50%;
-background: rgba(255, 255, 255, 0.1);
-animation: float 20s infinite ease-in-out;
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 20s infinite ease-in-out;
 }
 
 .alquiler-page-container::before {
