@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import Home from './pages/Home'
 import Info from './pages/Info'
 import Alquileres from './pages/Alquileres'
@@ -15,6 +16,7 @@ import Campo from './pages/Campo'
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" toastOptions={{ duration: 6000 }} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/info" element={<Info />} />

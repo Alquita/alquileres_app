@@ -1520,8 +1520,46 @@ transform: scale(1.01);
 }
 
 .contrato-textarea::placeholder {
-color: #adb5bd;
-font-style: italic;
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.contrato-fechas {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.contrato-fecha-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  flex: 1;
+  min-width: 140px;
+}
+
+.contrato-date-input,
+.contrato-select {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #212529;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.contrato-date-input:focus,
+.contrato-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  background-color: #ffffff;
 }
 
 /* Responsive - en pantallas pequeñas, apilar verticalmente */
