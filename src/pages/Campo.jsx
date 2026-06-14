@@ -33,7 +33,8 @@ function Campo() {
             saldo: '',
             recibi: '',
             diferencia: '',
-            aclaracion: ''
+            aclaracion: '',
+            metodoPago: ''
           })))
         }
       } finally {
@@ -80,6 +81,7 @@ function Campo() {
               <th className="text-center">Recibí</th>
               <th className="text-center">Diferencia</th>
               <th className="text-center">Aclaración</th>
+              <th className="text-center">Método de Pago</th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +94,7 @@ function Campo() {
                     value={fila.promedio}
                     onChange={(e) => handleInputChange(index, 'promedio', e.target.value)}
                     placeholder="Escribe aquí..."
-                    rows="2"
+                    rows="3"
                   />
                 </td>
                 <td>
@@ -101,7 +103,7 @@ function Campo() {
                     value={fila.saldo}
                     onChange={(e) => handleInputChange(index, 'saldo', e.target.value)}
                     placeholder="Escribe aquí..."
-                    rows="2"
+                    rows="3"
                   />
                 </td>
                 <td>
@@ -110,7 +112,7 @@ function Campo() {
                     value={fila.recibi}
                     onChange={(e) => handleInputChange(index, 'recibi', e.target.value)}
                     placeholder="Escribe aquí..."
-                    rows="2"
+                    rows="3"
                   />
                 </td>
                 <td>
@@ -119,7 +121,7 @@ function Campo() {
                     value={fila.diferencia}
                     onChange={(e) => handleInputChange(index, 'diferencia', e.target.value)}
                     placeholder="Escribe aquí..."
-                    rows="2"
+                    rows="3"
                   />
                 </td>
                 <td>
@@ -128,7 +130,16 @@ function Campo() {
                     value={fila.aclaracion}
                     onChange={(e) => handleInputChange(index, 'aclaracion', e.target.value)}
                     placeholder="Escribe aquí..."
-                    rows="2"
+                    rows="3"
+                  />
+                </td>
+                <td>
+                  <textarea
+                    className="form-control campo-textarea"
+                    value={fila.metodoPago}
+                    onChange={(e) => handleInputChange(index, 'metodoPago', e.target.value)}
+                    placeholder="Escribe aquí..."
+                    rows="3"
                   />
                 </td>
               </tr>

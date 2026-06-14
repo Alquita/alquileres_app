@@ -24,7 +24,7 @@ function Info() {
     { 
       id: 'casa-desantes', 
       nombre: 'CASA REARTES', 
-      direccion: 'Reartes', 
+      direccion: 'Calle 1 lote 253', 
       rentas: '120130140683',
       cooperativaLuz: '0610804E',
       comunaAgua: '16126'

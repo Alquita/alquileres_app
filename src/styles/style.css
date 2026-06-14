@@ -1656,8 +1656,8 @@ transform: scale(1.02);
 /* Estilos para textarea de Campo */
 .campo-textarea {
 width: 100%;
-padding: 0.8rem;
-font-size: 0.95rem;
+padding: 1rem;
+font-size: 1.05rem;
 border: 2px solid #e9ecef;
 border-radius: 8px;
 resize: vertical;
