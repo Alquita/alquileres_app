@@ -85,7 +85,7 @@ export async function loadCampo() {
 
   if (error) {
     console.error('Error loading campo from Supabase:', error)
-    return null
+    throw error
   }
   return data?.data || null
 }
