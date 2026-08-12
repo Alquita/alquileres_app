@@ -73,3 +73,38 @@ export async function saveSettings(settingsData) {
   }
   return true
 }
+
+// ── CAMPO ───────────────────────────────────────────────────
+
+export async function loadCampo() {
+  const { data, error } = await supabase
+    .from('campo')
+    .select('data')
+    .eq('id', 1)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Error loading campo from Supabase:', error)
+    return null
+  }
+  return data?.data || null
+}
+
+export async function saveCampo(campoData) {
+  const { error } = await supabase
+    .from('campo')
+    .upsert(
+      {
+        id: 1,
+        data: campoData,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'id' }
+    )
+
+  if (error) {
+    console.error('Error saving campo to Supabase:', error)
+    return false
+  }
+  return true
+}

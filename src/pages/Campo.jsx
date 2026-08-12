@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useCallback } from 'react'
-import { loadSettings, saveSettings } from '../services/syncService'
+import { useState, useEffect, useRef } from 'react'
+import { loadCampo, saveCampo } from '../services/syncService'
 
 function Campo() {
   const navigate = useNavigate()
@@ -14,6 +14,9 @@ function Campo() {
 
   const [cargando, setCargando] = useState(true)
   const [datos, setDatos] = useState([])
+  const datosRef = useRef([])
+  const isSaving = useRef(false)
+  const pendingSave = useRef(null)
 
   // ── SUPABASE: cargar campo al montar ──────────────────────
   useEffect(() => {
@@ -21,13 +24,14 @@ function Campo() {
     async function load() {
       setCargando(true)
       try {
-        const data = await loadSettings()
+        const data = await loadCampo()
         if (cancelled) return
 
-        if (data?.campo?.[key]) {
-          setDatos(data.campo[key])
+        if (data?.[key]) {
+          setDatos(data[key])
+          datosRef.current = data[key]
         } else {
-          setDatos(meses.map(mes => ({
+          const empty = meses.map(mes => ({
             mes,
             promedio: '',
             saldo: '',
@@ -35,7 +39,9 @@ function Campo() {
             diferencia: '',
             aclaracion: '',
             metodoPago: ''
-          })))
+          }))
+          setDatos(empty)
+          datosRef.current = empty
         }
       } finally {
         if (!cancelled) setCargando(false)
@@ -45,24 +51,28 @@ function Campo() {
     return () => { cancelled = true }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── SUPABASE: guardar campo con debounce ──────────────────
-  const saveToSupabase = useCallback(async () => {
-    const settings = (await loadSettings()) || {}
-    if (!settings.campo) settings.campo = {}
-    settings.campo[key] = datos
-    await saveSettings(settings)
-  }, [datos])
-
-  useEffect(() => {
-    if (cargando) return
-    const timer = setTimeout(() => { saveToSupabase() }, 2000)
-    return () => clearTimeout(timer)
-  }, [datos, saveToSupabase, cargando])
+  // ── SUPABASE: guardar instantáneo ─────────────────────────
+  async function saveCampoDatos(dataToSave) {
+    pendingSave.current = dataToSave
+    if (isSaving.current) return
+    isSaving.current = true
+    while (pendingSave.current !== null) {
+      const currentData = pendingSave.current
+      pendingSave.current = null
+      const campoData = (await loadCampo()) || {}
+      campoData[key] = currentData
+      await saveCampo(campoData)
+    }
+    isSaving.current = false
+  }
 
   const handleInputChange = (index, campo, valor) => {
-    const nuevosDatos = [...datos]
-    nuevosDatos[index][campo] = valor
+    const nuevosDatos = datosRef.current.map((fila, i) =>
+      i === index ? { ...fila, [campo]: valor } : fila
+    )
     setDatos(nuevosDatos)
+    datosRef.current = nuevosDatos
+    saveCampoDatos(nuevosDatos)
   }
 
   if (cargando) return <div className="text-center mt-5">Cargando...</div>
@@ -89,58 +99,64 @@ function Campo() {
               <tr key={index}>
                 <td className="mes-cell-excel">{fila.mes}</td>
                 <td>
-                  <textarea
-                    className="form-control campo-textarea"
-                    value={fila.promedio}
-                    onChange={(e) => handleInputChange(index, 'promedio', e.target.value)}
-                    placeholder="Escribe aquí..."
-                    rows="3"
-                  />
-                </td>
-                <td>
-                  <textarea
-                    className="form-control campo-textarea"
-                    value={fila.saldo}
-                    onChange={(e) => handleInputChange(index, 'saldo', e.target.value)}
-                    placeholder="Escribe aquí..."
-                    rows="3"
-                  />
-                </td>
-                <td>
-                  <textarea
-                    className="form-control campo-textarea"
-                    value={fila.recibi}
-                    onChange={(e) => handleInputChange(index, 'recibi', e.target.value)}
-                    placeholder="Escribe aquí..."
-                    rows="3"
-                  />
-                </td>
-                <td>
-                  <textarea
-                    className="form-control campo-textarea"
-                    value={fila.diferencia}
-                    onChange={(e) => handleInputChange(index, 'diferencia', e.target.value)}
-                    placeholder="Escribe aquí..."
-                    rows="3"
-                  />
-                </td>
-                <td>
-                  <textarea
-                    className="form-control campo-textarea"
-                    value={fila.aclaracion}
-                    onChange={(e) => handleInputChange(index, 'aclaracion', e.target.value)}
-                    placeholder="Escribe aquí..."
-                    rows="3"
-                  />
-                </td>
-                <td>
-                  <textarea
-                    className="form-control campo-textarea"
-                    value={fila.metodoPago}
-                    onChange={(e) => handleInputChange(index, 'metodoPago', e.target.value)}
-                    placeholder="Escribe aquí..."
-                    rows="3"
-                  />
+                    <textarea
+                      className="form-control campo-textarea"
+                      value={fila.promedio}
+                      onChange={(e) => handleInputChange(index, 'promedio', e.target.value)}
+                      onBlur={() => saveCampoDatos(datosRef.current)}
+                      placeholder="Escribe aquí..."
+                      rows="3"
+                    />
+                  </td>
+                  <td>
+                    <textarea
+                      className="form-control campo-textarea"
+                      value={fila.saldo}
+                      onChange={(e) => handleInputChange(index, 'saldo', e.target.value)}
+                      onBlur={() => saveCampoDatos(datosRef.current)}
+                      placeholder="Escribe aquí..."
+                      rows="3"
+                    />
+                  </td>
+                  <td>
+                    <textarea
+                      className="form-control campo-textarea"
+                      value={fila.recibi}
+                      onChange={(e) => handleInputChange(index, 'recibi', e.target.value)}
+                      onBlur={() => saveCampoDatos(datosRef.current)}
+                      placeholder="Escribe aquí..."
+                      rows="3"
+                    />
+                  </td>
+                  <td>
+                    <textarea
+                      className="form-control campo-textarea"
+                      value={fila.diferencia}
+                      onChange={(e) => handleInputChange(index, 'diferencia', e.target.value)}
+                      onBlur={() => saveCampoDatos(datosRef.current)}
+                      placeholder="Escribe aquí..."
+                      rows="3"
+                    />
+                  </td>
+                  <td>
+                    <textarea
+                      className="form-control campo-textarea"
+                      value={fila.aclaracion}
+                      onChange={(e) => handleInputChange(index, 'aclaracion', e.target.value)}
+                      onBlur={() => saveCampoDatos(datosRef.current)}
+                      placeholder="Escribe aquí..."
+                      rows="3"
+                    />
+                  </td>
+                  <td>
+                    <textarea
+                      className="form-control campo-textarea"
+                      value={fila.metodoPago}
+                      onChange={(e) => handleInputChange(index, 'metodoPago', e.target.value)}
+                      onBlur={() => saveCampoDatos(datosRef.current)}
+                      placeholder="Escribe aquí..."
+                      rows="3"
+                    />
                 </td>
               </tr>
             ))}

@@ -66,8 +66,8 @@ function Info() {
     {
       id: 'depto-vm',
       nombre: 'DEPTO VILLA MARIA',
-      ecogas: '22352757',
-      epec: '1598382 - 0289089206'
+      ecogas: '22513913',
+      epec: '1598382 - 0320968401'
     }
   ]
 
