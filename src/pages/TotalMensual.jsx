@@ -1,9 +1,13 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useCallback } from 'react'
-import { loadProperty, loadSettings, saveSettings } from '../services/syncService'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import toast from 'react-hot-toast'
+import { loadProperty, loadSettings, loadSettingsMasReciente, saveSettings } from '../services/syncService'
+import { useAnio } from '../context/AnioContext'
+import SelectorAnio from '../components/SelectorAnio'
 
 function TotalMensual() {
   const navigate = useNavigate()
+  const { anioSeleccionado } = useAnio()
 
   const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -56,9 +60,20 @@ function TotalMensual() {
   const [totalesMensuales, setTotalesMensuales] = useState([])
   const [porcentajePrimerSemestre, setPorcentajePrimerSemestre] = useState(0)
   const [porcentajeSegundoSemestre, setPorcentajeSegundoSemestre] = useState(0)
-  const [condiciones, setCondiciones] = useState(
-    Array(12).fill(null).map(() => ({ texto: '', color: '#212529' }))
-  )
+  const condicionesVacias = () => Array(12).fill(null).map(() => ({ texto: '', color: '#212529' }))
+  const [condiciones, setCondiciones] = useState(condicionesVacias)
+
+  // Año al que pertenecen los datos en pantalla (el save SIEMPRE usa este)
+  const [anioCargado, setAnioCargado] = useState(null)
+  // Error al consultar Supabase: bloquea edición y autosave hasta reintentar OK
+  const [errorCarga, setErrorCarga] = useState(false)
+  const [intento, setIntento] = useState(0)
+  // Snapshot de lo cargado: si no cambió, no se guarda (no crea filas sin editar)
+  const baseRef = useRef(null)
+  // Cambio pendiente del debounce, con su propio año
+  const pendienteRef = useRef(null)
+  // Contador de cargas, para ignorar saves viejos que terminan tarde
+  const cargaRef = useRef(0)
 
   // Calcular totales usando datos ya cargados (no hace llamadas extra)
   const calcularTotales = useCallback((todasLasData) => {
@@ -89,18 +104,27 @@ function TotalMensual() {
     setTotalesMensuales(totales)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── SUPABASE: cargar todo al montar ───────────────────────
+  // ── SUPABASE: cargar todo el año seleccionado ─────────────
   useEffect(() => {
     let cancelled = false
+    const anio = anioSeleccionado
+    cargaRef.current += 1
     async function load() {
       setCargando(true)
+      setErrorCarga(false)
+      baseRef.current = null
       try {
-        // Cargar settings
-        const settings = await loadSettings()
-        if (!cancelled && settings) {
-          if (settings.comision_1er_semestre !== undefined) setPorcentajePrimerSemestre(settings.comision_1er_semestre)
-          if (settings.comision_2do_semestre !== undefined) setPorcentajeSegundoSemestre(settings.comision_2do_semestre)
-          if (settings.condiciones) setCondiciones(settings.condiciones)
+        // Cargar settings del año
+        const settings = await loadSettings(anio)
+        let comision1 = settings?.comision_1er_semestre ?? 0
+        let comision2 = settings?.comision_2do_semestre ?? 0
+        const condicionesIniciales = settings?.condiciones || condicionesVacias()
+
+        // Año sin fila: precargar los porcentajes del año anterior (condiciones vacías)
+        if (!settings) {
+          const anterior = await loadSettingsMasReciente(anio)
+          comision1 = anterior?.comision_1er_semestre ?? 0
+          comision2 = anterior?.comision_2do_semestre ?? 0
         }
 
         // IDs únicos a cargar (principal + secundarias comparten IDs con todasLasPropiedades)
@@ -111,10 +135,15 @@ function TotalMensual() {
 
         // Cargar todas las propiedades en paralelo (una sola vez)
         const resultados = await Promise.all(
-          idsUnicos.map(p => loadProperty(p.tipo, p.propietario, p.id))
+          idsUnicos.map(p => loadProperty(p.tipo, p.propietario, p.id, anio))
         )
 
         if (cancelled) return
+
+        setPorcentajePrimerSemestre(comision1)
+        setPorcentajeSegundoSemestre(comision2)
+        setCondiciones(condicionesIniciales)
+        setAnioCargado(anio)
 
         // Mapear por id para acceso rápido
         const todasLasData = {}
@@ -123,28 +152,53 @@ function TotalMensual() {
         })
 
         calcularTotales(todasLasData)
+      } catch {
+        if (!cancelled) {
+          setAnioCargado(null)
+          setErrorCarga(true)
+          toast.error('No se pudieron cargar los datos de la base. Comprobá tu conexión y reintentá.')
+        }
       } finally {
         if (!cancelled) setCargando(false)
       }
     }
     load()
-    return () => { cancelled = true }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true
+      // Al cambiar de año o salir: el debounce ya se canceló, guardar lo pendiente en SU año
+      const pendiente = pendienteRef.current
+      if (pendiente) {
+        pendienteRef.current = null
+        saveSettings(pendiente.anio, pendiente.data)
+      }
+    }
+  }, [anioSeleccionado, intento]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── SUPABASE: guardar settings con debounce ───────────────
-  const saveToSupabase = useCallback(async () => {
-    await saveSettings({
+  useEffect(() => {
+    if (cargando || errorCarga || anioCargado !== anioSeleccionado) return
+
+    const data = {
       comision_1er_semestre: porcentajePrimerSemestre,
       comision_2do_semestre: porcentajeSegundoSemestre,
       condiciones
-    })
-  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones])
+    }
+    const json = JSON.stringify(data)
 
-  useEffect(() => {
-    if (cargando) return
-    const timer = setTimeout(() => { saveToSupabase() }, 2000)
+    // Primera pasada después de cargar: solo tomar el snapshot
+    if (baseRef.current === null) { baseRef.current = json; return }
+    if (json === baseRef.current) { pendienteRef.current = null; return }
+
+    const anio = anioCargado
+    const carga = cargaRef.current
+    pendienteRef.current = { anio, data }
+    const timer = setTimeout(async () => {
+      pendienteRef.current = null
+      const ok = await saveSettings(anio, data)
+      if (ok && carga === cargaRef.current) baseRef.current = json
+    }, 2000)
     return () => clearTimeout(timer)
-  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones, saveToSupabase, cargando])
+  }, [porcentajePrimerSemestre, porcentajeSegundoSemestre, condiciones, cargando, errorCarga, anioCargado, anioSeleccionado])
 
   const handleCondicionTexto = (index, valor) => {
     const nuevas = [...condiciones]
@@ -169,11 +223,40 @@ function TotalMensual() {
 
   const totalAnual = totalesMensuales.reduce((sum, m) => sum + m.total, 0)
 
-  if (cargando) return <div className="text-center mt-5">Cargando...</div>
+  if (errorCarga) return (
+    <div className="alquiler-page-container">
+      <h2 className="alquiler-page-title">Total Mensual - Todos los Alquileres</h2>
+      <SelectorAnio />
+      <div className="alert alert-warning mt-3">
+        No se pudieron cargar los datos de la base. La edición está bloqueada para no borrar
+        nada. Comprobá tu conexión y tocá Reintentar.
+        <div className="mt-2">
+          <button className="btn btn-primary btn-sm" onClick={() => setIntento(n => n + 1)}>
+            Reintentar
+          </button>
+        </div>
+      </div>
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate('/alquileres/seleccion')}
+      >
+        Volver
+      </button>
+    </div>
+  )
+
+  if (cargando || anioCargado !== anioSeleccionado) return (
+    <div className="alquiler-page-container">
+      <h2 className="alquiler-page-title">Total Mensual - Todos los Alquileres</h2>
+      <SelectorAnio />
+      <div className="text-center mt-5">Cargando...</div>
+    </div>
+  )
 
   return (
     <div className="alquiler-page-container">
       <h2 className="alquiler-page-title">Total Mensual - Todos los Alquileres</h2>
+      <SelectorAnio />
 
       <div className="comision-semestres-container">
         <div className="comision-control">

@@ -1,12 +1,28 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect, useCallback } from 'react'
-import { loadProperty, saveProperty } from '../services/syncService'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import toast from 'react-hot-toast'
+import { loadProperty, loadPropertyMasReciente, saveProperty, esParamValido } from '../services/syncService'
 import { descartarToast } from '../utils/notificaciones'
+import { useAnio } from '../context/AnioContext'
+import SelectorAnio from '../components/SelectorAnio'
+
+// Claves que se copian del año anterior al empezar un año nuevo
+const CLAVES_CONTRATO = [
+  'contrato_principal', 'contrato_ultima_actualizacion', 'contrato_periodo',
+  'contrato_cochera', 'contrato_ultima_actualizacion_cochera', 'contrato_periodo_cochera',
+  'contrato_depto3c', 'contrato_ultima_actualizacion_depto3c', 'contrato_periodo_depto3c'
+]
+
+const unirFecha = (a, m, d) => a && m && d ? `${a}-${m}-${d}` : ''
 
 function DetalleAlquiler() {
   const { tipo, propietario, id } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const { anioSeleccionado } = useAnio()
+
+  // Nunca guardar con params de URL inválidos (ej: ':tipo')
+  const paramsValidos = [tipo, propietario, id].every(esParamValido)
   
   const propiedad = location.state
 
@@ -36,6 +52,17 @@ function DetalleAlquiler() {
 
   // ── Estado cargando ───────────────────────────────────────
   const [cargando, setCargando] = useState(true)
+  // Año al que pertenecen los datos en pantalla (el save SIEMPRE usa este)
+  const [anioCargado, setAnioCargado] = useState(null)
+  // Error al consultar Supabase: bloquea edición y autosave hasta reintentar OK
+  const [errorCarga, setErrorCarga] = useState(false)
+  const [intento, setIntento] = useState(0)
+  // Snapshot de lo cargado: si no cambió, no se guarda (no crea filas sin editar)
+  const baseRef = useRef(null)
+  // Cambio pendiente del debounce, con su propio año y params
+  const pendienteRef = useRef(null)
+  // Contador de cargas, para ignorar saves viejos que terminan tarde
+  const cargaRef = useRef(0)
 
   // ── Estado modal ──────────────────────────────────────────
   const [modal, setModal] = useState(null)
@@ -104,75 +131,86 @@ function DetalleAlquiler() {
   const templateNotas = () => meses.reduce((acc, mes) => { acc[mes] = ''; return acc }, {})
   const templateLock = () => meses.reduce((acc, m) => { acc[m] = false; return acc }, {})
 
-  // ── SUPABASE: cargar datos al montar ──────────────────────
+  // ── SUPABASE: cargar datos del año seleccionado ───────────
   useEffect(() => {
     let cancelled = false
+    const anioACargar = anioSeleccionado
+    cargaRef.current += 1
     async function load() {
       setCargando(true)
+      setErrorCarga(false)
+      baseRef.current = null
       try {
-        const data = await loadProperty(tipo, propietario, id)
+        let data = await loadProperty(tipo, propietario, id, anioACargar)
+
+        // Año sin fila: todo vacío, pero conservando los contratos del año anterior
+        if (!data) {
+          const anterior = await loadPropertyMasReciente(tipo, propietario, id, anioACargar)
+          data = {}
+          CLAVES_CONTRATO.forEach(k => {
+            if (anterior?.[k] !== undefined) data[k] = anterior[k]
+          })
+        }
         if (cancelled) return
 
-        if (data) {
-          setDatos(data.principal || templateDatos())
-          setContrato(data.contrato_principal ?? '')
-          setNotasGastos(data.notas_principal || templateNotas())
-          setLockedMeses(data.lock_principal || templateLock())
-          const partes = (data.contrato_ultima_actualizacion || '').split('-')
-          setAnio(partes[0] || '')
-          setMes(partes[1] || '')
-          setDia(partes[2] || '')
-          setPeriodoMeses(data.contrato_periodo ?? 3)
+        setDatos(data.principal || templateDatos())
+        setContrato(data.contrato_principal ?? '')
+        setNotasGastos(data.notas_principal || templateNotas())
+        setLockedMeses(data.lock_principal || templateLock())
+        const partes = (data.contrato_ultima_actualizacion || '').split('-')
+        setAnio(partes[0] || '')
+        setMes(partes[1] || '')
+        setDia(partes[2] || '')
+        setPeriodoMeses(data.contrato_periodo ?? 3)
 
-          if (esPuertasDelSol) {
-            setDatosCochera(data.cochera || templateDatos())
-            setContratoCochera(data.contrato_cochera ?? '')
-            setNotasGastosCochera(data.notas_cochera || templateNotas())
-            setLockedMesesCochera(data.lock_cochera || templateLock())
-            const partesC = (data.contrato_ultima_actualizacion_cochera || '').split('-')
-            setAnioCochera(partesC[0] || '')
-            setMesCochera(partesC[1] || '')
-            setDiaCochera(partesC[2] || '')
-            setPeriodoMesesCochera(data.contrato_periodo_cochera ?? 3)
-          }
+        if (esPuertasDelSol) {
+          setDatosCochera(data.cochera || templateDatos())
+          setContratoCochera(data.contrato_cochera ?? '')
+          setNotasGastosCochera(data.notas_cochera || templateNotas())
+          setLockedMesesCochera(data.lock_cochera || templateLock())
+          const partesC = (data.contrato_ultima_actualizacion_cochera || '').split('-')
+          setAnioCochera(partesC[0] || '')
+          setMesCochera(partesC[1] || '')
+          setDiaCochera(partesC[2] || '')
+          setPeriodoMesesCochera(data.contrato_periodo_cochera ?? 3)
+        }
 
-          if (esRoblesXIVFabian) {
-            setDatosDepto3C(data.depto3c || templateDatos())
-            setContratoDepto3C(data.contrato_depto3c ?? '')
-            setNotasGastosDepto3C(data.notas_depto3c || templateNotas())
-            setLockedMesesDepto3C(data.lock_depto3c || templateLock())
-            const partesD = (data.contrato_ultima_actualizacion_depto3c || '').split('-')
-            setAnioDepto3C(partesD[0] || '')
-            setMesDepto3C(partesD[1] || '')
-            setDiaDepto3C(partesD[2] || '')
-            setPeriodoMesesDepto3C(data.contrato_periodo_depto3c ?? 3)
-          }
-        } else {
-          setDatos(templateDatos())
-          setNotasGastos(templateNotas())
-          setLockedMeses(templateLock())
-          if (esPuertasDelSol) {
-            setDatosCochera(templateDatos())
-            setNotasGastosCochera(templateNotas())
-            setLockedMesesCochera(templateLock())
-          }
-          if (esRoblesXIVFabian) {
-            setDatosDepto3C(templateDatos())
-            setNotasGastosDepto3C(templateNotas())
-            setLockedMesesDepto3C(templateLock())
-          }
+        if (esRoblesXIVFabian) {
+          setDatosDepto3C(data.depto3c || templateDatos())
+          setContratoDepto3C(data.contrato_depto3c ?? '')
+          setNotasGastosDepto3C(data.notas_depto3c || templateNotas())
+          setLockedMesesDepto3C(data.lock_depto3c || templateLock())
+          const partesD = (data.contrato_ultima_actualizacion_depto3c || '').split('-')
+          setAnioDepto3C(partesD[0] || '')
+          setMesDepto3C(partesD[1] || '')
+          setDiaDepto3C(partesD[2] || '')
+          setPeriodoMesesDepto3C(data.contrato_periodo_depto3c ?? 3)
+        }
+        setAnioCargado(anioACargar)
+      } catch {
+        if (!cancelled) {
+          setAnioCargado(null)
+          setErrorCarga(true)
+          toast.error('No se pudieron cargar los datos de la base. Comprobá tu conexión y reintentá.')
         }
       } finally {
         if (!cancelled) setCargando(false)
       }
     }
     load()
-    return () => { cancelled = true }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true
+      // Al cambiar de año o salir: el debounce ya se canceló, guardar lo pendiente en SU año
+      const pendiente = pendienteRef.current
+      if (pendiente) {
+        pendienteRef.current = null
+        saveProperty(pendiente.tipo, pendiente.propietario, pendiente.id, pendiente.anio, pendiente.data)
+      }
+    }
+  }, [anioSeleccionado, tipo, propietario, id, intento]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── SUPABASE: guardar cambios con debounce ────────────────
-  const saveToSupabase = useCallback(async () => {
-    const unirFecha = (a, m, d) => a && m && d ? `${a}-${m}-${d}` : ''
+  // ── Armar el objeto que se guarda en properties.data ──────
+  const armarData = useCallback(() => {
     const data = {
       principal: datos,
       contrato_principal: contrato,
@@ -197,6 +235,17 @@ function DetalleAlquiler() {
       data.notas_depto3c = notasGastosDepto3C
       data.lock_depto3c = lockedMesesDepto3C
     }
+    return data
+  }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
+      notasGastos, notasGastosCochera, notasGastosDepto3C,
+      lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
+      dia, mes, anio, periodoMeses,
+      diaCochera, mesCochera, anioCochera, periodoMesesCochera,
+      diaDepto3C, mesDepto3C, anioDepto3C, periodoMesesDepto3C,
+      esPuertasDelSol, esRoblesXIVFabian])
+
+  // ── SUPABASE: guardar en el año indicado ──────────────────
+  const saveToSupabase = useCallback(async (anioDestino, data) => {
     // ── Si algún contrato fue renovado, descartar su toast ──
     const ahora = new Date()
     const fechaPpal = unirFecha(anio, mes, dia)
@@ -222,26 +271,35 @@ function DetalleAlquiler() {
       }
     }
 
-    await saveProperty(tipo, propietario, id, data)
-  }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
-      notasGastos, notasGastosCochera, notasGastosDepto3C,
-      lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
-      dia, mes, anio, periodoMeses,
+    return await saveProperty(tipo, propietario, id, anioDestino, data)
+  }, [dia, mes, anio, periodoMeses,
       diaCochera, mesCochera, anioCochera, periodoMesesCochera,
       diaDepto3C, mesDepto3C, anioDepto3C, periodoMesesDepto3C,
       esPuertasDelSol, esRoblesXIVFabian, tipo, propietario, id])
 
+  // ── SUPABASE: autosave con debounce ───────────────────────
   useEffect(() => {
-    if (cargando) return
-    const timer = setTimeout(() => { saveToSupabase() }, 2000)
+    if (cargando || errorCarga || anioCargado !== anioSeleccionado || !paramsValidos) return
+
+    const json = JSON.stringify(armarData())
+
+    // Primera pasada después de cargar: solo tomar el snapshot
+    if (baseRef.current === null) { baseRef.current = json; return }
+    if (json === baseRef.current) { pendienteRef.current = null; return }
+
+    // Copia independiente: los handlers mutan las filas en el lugar
+    const snapshot = JSON.parse(json)
+    const anioDestino = anioCargado
+    const carga = cargaRef.current
+    pendienteRef.current = { tipo, propietario, id, anio: anioDestino, data: snapshot }
+    const timer = setTimeout(async () => {
+      pendienteRef.current = null
+      const ok = await saveToSupabase(anioDestino, snapshot)
+      if (ok && carga === cargaRef.current) baseRef.current = json
+    }, 2000)
     return () => clearTimeout(timer)
-  }, [datos, datosCochera, datosDepto3C, contrato, contratoCochera, contratoDepto3C,
-      notasGastos, notasGastosCochera, notasGastosDepto3C,
-      lockedMeses, lockedMesesCochera, lockedMesesDepto3C,
-      dia, mes, anio, periodoMeses,
-      diaCochera, mesCochera, anioCochera, periodoMesesCochera,
-      diaDepto3C, mesDepto3C, anioDepto3C, periodoMesesDepto3C,
-      esPuertasDelSol, esRoblesXIVFabian, saveToSupabase, cargando])
+  }, [cargando, errorCarga, anioCargado, anioSeleccionado, paramsValidos, armarData, saveToSupabase,
+      tipo, propietario, id])
 
   // ── Toast de vencimiento de contrato ───────────────────────
   // (el toast global persistente en ContratoChecker maneja las notificaciones)
@@ -285,13 +343,46 @@ function DetalleAlquiler() {
   const tituloTipo = tipo === 'departamentos' ? 'Departamento' : 'Casa'
   const tituloPropietario = propietario === 'yani' ? 'Yani' : 'Fabián'
 
-  if (cargando) return <div className="text-center mt-5">Cargando...</div>
+  if (errorCarga) return (
+    <div className="alquiler-page-container">
+      <h2 className="alquiler-page-title">
+        {tituloPropietario} – {propiedad?.nombre || tituloTipo}
+      </h2>
+      <SelectorAnio />
+      <div className="alert alert-warning mt-3">
+        No se pudieron cargar los datos de la base. La edición está bloqueada para no borrar
+        nada. Comprobá tu conexión y tocá Reintentar.
+        <div className="mt-2">
+          <button className="btn btn-primary btn-sm" onClick={() => setIntento(n => n + 1)}>
+            Reintentar
+          </button>
+        </div>
+      </div>
+      <button
+        className="btn btn-secondary mt-4"
+        onClick={() => navigate(`/alquileres/${tipo}/${propietario}`)}
+      >
+        Volver
+      </button>
+    </div>
+  )
+
+  if (cargando || anioCargado !== anioSeleccionado) return (
+    <div className="alquiler-page-container">
+      <h2 className="alquiler-page-title">
+        {tituloPropietario} – {propiedad?.nombre || tituloTipo}
+      </h2>
+      <SelectorAnio />
+      <div className="text-center mt-5">Cargando...</div>
+    </div>
+  )
 
   return (
     <div className="alquiler-page-container">
       <h2 className="alquiler-page-title">
         {tituloPropietario} – {propiedad?.nombre || tituloTipo}
       </h2>
+      <SelectorAnio />
 
       <div className="alquiler-tables-container">
         {/* Tabla principal - CON CONTRATO AL LADO para departamentos con contrato */}
@@ -300,12 +391,12 @@ function DetalleAlquiler() {
             <div className="alquiler-table-section">
               <div className="alquiler-table-wrapper">
                 <h3 className="subtitulo-tabla">
-                  {esPuertasDelSol ? 'Depto 10 F' : esRoblesXIVFabian ? 'Depto 4C' : 'Año 2026'}
+                  {esPuertasDelSol ? 'Depto 10 F' : esRoblesXIVFabian ? 'Depto 4C' : `Año ${anioSeleccionado}`}
                 </h3>
                 <table className="table table-bordered alquiler-table-excel">
                   <thead>
                     <tr>
-                      <th className="text-center">AÑO 2026</th>
+                      <th className="text-center">AÑO {anioSeleccionado}</th>
                       <th className="text-center">Alquiler</th>
                       <th className="text-center">Exp. Extraordinaria</th>
                       <th className="text-center">Comisión Adm</th>
@@ -456,11 +547,11 @@ function DetalleAlquiler() {
           </div>
         ) : (
           <div className="alquiler-table-wrapper">
-            <h3 className="subtitulo-tabla">Año 2026</h3>
+            <h3 className="subtitulo-tabla">Año {anioSeleccionado}</h3>
             <table className="table table-bordered alquiler-table-excel">
               <thead>
                 <tr>
-                  <th className="text-center">AÑO 2026</th>
+                  <th className="text-center">AÑO {anioSeleccionado}</th>
                   <th className="text-center">Alquiler</th>
                   <th className="text-center">Exp. Extraordinaria</th>
                   <th className="text-center">Comisión Adm</th>
@@ -556,7 +647,7 @@ function DetalleAlquiler() {
                 <table className="table table-bordered alquiler-table-excel">
                   <thead>
                     <tr>
-                      <th className="text-center">AÑO 2026</th>
+                      <th className="text-center">AÑO {anioSeleccionado}</th>
                       <th className="text-center">Alquiler</th>
                       <th className="text-center">Exp. Extraordinaria</th>
                       <th className="text-center">Comisión Adm</th>
@@ -716,7 +807,7 @@ function DetalleAlquiler() {
                 <table className="table table-bordered alquiler-table-excel">
                   <thead>
                     <tr>
-                      <th className="text-center">AÑO 2026</th>
+                      <th className="text-center">AÑO {anioSeleccionado}</th>
                       <th className="text-center">Alquiler</th>
                       <th className="text-center">Exp. Extraordinaria</th>
                       <th className="text-center">Comisión Adm</th>

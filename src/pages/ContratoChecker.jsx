@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { loadProperty } from '../services/syncService'
+import { loadPropertyMasReciente } from '../services/syncService'
 import { reproducirSonido } from '../utils/sonido'
 import { guardarToastId } from '../utils/notificaciones'
 
@@ -41,7 +41,9 @@ function ContratoChecker() {
       ])].map(s => JSON.parse(s))
 
       const results = await Promise.all(
-        uniqueIds.map(p => loadProperty(p.tipo, p.propietario, p.id))
+        // Revisar el contrato del último año con datos (se copia año a año)
+        // Si una consulta falla, esa propiedad se saltea (no corta el resto)
+        uniqueIds.map(p => loadPropertyMasReciente(p.tipo, p.propietario, p.id).catch(() => null))
       )
 
       const dataPorId = {}

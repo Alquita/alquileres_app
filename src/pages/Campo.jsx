@@ -2,9 +2,12 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { loadCampo, saveCampo } from '../services/syncService'
+import { useAnio } from '../context/AnioContext'
+import SelectorAnio from '../components/SelectorAnio'
 
 function Campo() {
   const navigate = useNavigate()
+  const { anioSeleccionado } = useAnio()
 
   const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -20,6 +23,8 @@ function Campo() {
   const dataRef = useRef(data)
   const colaGuardado = useRef(Promise.resolve())
   const dirtyRef = useRef(false)
+  // Año al que pertenecen los datos en pantalla (el save SIEMPRE usa este)
+  const anioCargadoRef = useRef(null)
 
   function crearVacio() {
     return {
@@ -41,13 +46,19 @@ function Campo() {
     }
   }
 
-  // ── SUPABASE: cargar campo al montar ──────────────────────
+  // ── SUPABASE: cargar campo del año seleccionado ───────────
   useEffect(() => {
     let cancelled = false
+    const anio = anioSeleccionado
     async function load() {
       setCargando(true)
+      // Resetear todo antes de cargar el año (no editar ni guardar mientras tanto)
+      anioCargadoRef.current = null
+      dirtyRef.current = false
+      dataRef.current = crearVacio()
+      setData(dataRef.current)
       try {
-        const dbData = await loadCampo()
+        const dbData = await loadCampo(anio)
         if (cancelled) return
 
         const inicial = crearVacio()
@@ -56,6 +67,7 @@ function Campo() {
           if (Array.isArray(dbData[key40])) inicial[key40] = dbData[key40]
         }
         dataRef.current = inicial
+        anioCargadoRef.current = anio
         setData(inicial)
         setErrorCarga(false)
       } catch {
@@ -69,26 +81,31 @@ function Campo() {
     }
     load()
     return () => { cancelled = true }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [anioSeleccionado]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── SUPABASE: guardado único serializado con reintento ────
   function guardarAhora() {
+    // El año viaja junto con el snapshot: nunca se guarda en otro año
+    const anio = anioCargadoRef.current
+    if (anio === null) return
     const snapshot = JSON.parse(JSON.stringify(dataRef.current))
     dirtyRef.current = false
     colaGuardado.current = colaGuardado.current.then(async () => {
       let ok = false
       for (let i = 0; i < 3 && !ok; i++) {
-        ok = await saveCampo(snapshot)
+        ok = await saveCampo(anio, snapshot)
         if (!ok) await new Promise(r => setTimeout(r, 1000))
       }
       if (!ok) {
-        dirtyRef.current = true
+        if (anioCargadoRef.current === anio) dirtyRef.current = true
         toast.error('No se pudo guardar. Reintentá en un momento.')
       }
     })
   }
 
   const handleInputChange = (llave, index, campo, valor) => {
+    // No editar mientras carga o si los datos en pantalla no son del año elegido
+    if (cargando || anioCargadoRef.current !== anioSeleccionado) return
     const nuevo = {
       ...dataRef.current,
       [llave]: dataRef.current[llave].map((fila, i) =>
@@ -114,11 +131,18 @@ function Campo() {
     }
   }, [])
 
-  if (cargando) return <div className="text-center mt-5">Cargando...</div>
+  if (cargando) return (
+    <div className="alquiler-page-container">
+      <h2 className="alquiler-page-title">Campo - 130 HAS</h2>
+      <SelectorAnio />
+      <div className="text-center mt-5">Cargando...</div>
+    </div>
+  )
 
   return (
     <div className="alquiler-page-container">
       <h2 className="alquiler-page-title">Campo - 130 HAS</h2>
+      <SelectorAnio />
 
       {errorCarga && (
         <div className="alert alert-warning mt-3">
@@ -131,7 +155,7 @@ function Campo() {
         <table className="table table-bordered alquiler-table-excel">
           <thead>
             <tr>
-              <th className="text-center">AÑO 2026</th>
+              <th className="text-center">AÑO {anioSeleccionado}</th>
               <th className="text-center">Promedio</th>
               <th className="text-center">Saldo</th>
               <th className="text-center">Recibí</th>
