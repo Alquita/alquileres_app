@@ -12,6 +12,7 @@ import ListaAlquileres from './pages/ListaAlquileres'
 import DetalleAlquiler from './pages/DetalleAlquiler'
 import TotalMensual from './pages/TotalMensual'
 import Campo from './pages/Campo'
+import Proyectos from './pages/Proyectos'
 import ContratoChecker from './pages/ContratoChecker'
 import PwaUpdater from './pages/PwaUpdater'
 import { AnioProvider } from './context/AnioContext'
@@ -38,6 +39,7 @@ function App() {
           <Route path="/alquileres/:tipo/:propietario/:id" element={<DetalleAlquiler />} />
           <Route path="/alquileres/total-mensual" element={<TotalMensual />} />
           <Route path="/alquileres/campo" element={<Campo />} />
+          <Route path="/proyectos" element={<Proyectos />} />
         </Routes>
       </AnioProvider>
     </BrowserRouter>

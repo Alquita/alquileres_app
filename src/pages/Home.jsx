@@ -30,6 +30,13 @@ function Home() {
         >
           Alquileres
         </button>
+
+        <button
+          className="btn btn-warning btn-lg px-5 py-3"
+          onClick={() => navigate('/proyectos')}
+        >
+          Proyectos
+        </button>
       </div>
     </div>
   )

@@ -175,3 +175,43 @@ export async function saveCampo(anio, campoData) {
   }
   return true
 }
+
+// ── PAGOS HIJO ──────────────────────────────────────────────
+
+export async function loadPagosHijo(anio) {
+  const { data, error } = await supabase
+    .from('pagos_hijo')
+    .select('data')
+    .eq('id', anio)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Error loading pagos_hijo from Supabase:', error)
+    throw error
+  }
+  return data?.data || null
+}
+
+export async function savePagosHijo(anio, pagosData) {
+  if (!Number.isInteger(anio)) {
+    console.error('savePagosHijo cancelado: año inválido', anio)
+    return false
+  }
+
+  const { error } = await supabase
+    .from('pagos_hijo')
+    .upsert(
+      {
+        id: anio,
+        data: pagosData,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'id' }
+    )
+
+  if (error) {
+    console.error('Error saving pagos_hijo to Supabase:', error)
+    return false
+  }
+  return true
+}
